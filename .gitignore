@@ -1,0 +1,12 @@
+# JetBrains IDE configuration
+.idea/
+
+# Build & Distributable directories
+build/
+dist/
+
+# Node Modules
+node_modules
+
+# Environment variable (use `.env.example` for template)
+.env
