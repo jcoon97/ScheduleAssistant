@@ -2,19 +2,21 @@
   "name": "coverage",
   "description": "Handle coverage requests for 2U Learning Assistants",
   "license": "MIT",
-  "main": "build/server.js",
+  "main": "build/startup.js",
   "private": true,
   "version": "1.0.0",
   "scripts": {
     "clean": "rimraf build dist",
     "build": "tsc --project tsconfig.json",
     "cleanbuild": "pnpm run clean && pnpm run build",
-    "start": "pnpm run cleanbuild && node build/server.js",
+    "start": "pnpm run cleanbuild && node build/startup.js",
     "start:dev": "tsc --project tsconfig.json --watch && NODE_ENV=development nodemon build",
     "preinstall": "npx only-allow pnpm"
   },
   "dependencies": {
+    "@slack/webhook": "^6.0.0",
     "axios": "^0.24.0",
+    "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "googleapis": "^89.0.0",

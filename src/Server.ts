@@ -1,16 +1,17 @@
 import express, { Express, json, urlencoded } from "express";
 import "reflect-metadata";
-import { Container, Service } from "typedi";
+import { Service } from "typedi";
+import "./dayjs";
 import { getLogger } from "./logger";
 import routes from "./routes";
 import { getEnvOrDefault } from "./utils/env";
 
-const PORT: number = parseInt(
-    getEnvOrDefault("PORT", "3000")
-);
-
 @Service()
 export class Server {
+    static readonly PORT: number = parseInt(
+        <string>getEnvOrDefault("PORT", "3000")
+    );
+
     private readonly app: Express;
 
     constructor() {
@@ -22,12 +23,8 @@ export class Server {
         this.app.use(urlencoded({ extended: false }));
         this.app.use(routes);
 
-        this.app.listen(PORT, (): void => {
-            getLogger().info(`Started Express server on port ${ PORT }`);
+        this.app.listen(Server.PORT, (): void => {
+            getLogger().info(`Started Express server on port ${ Server.PORT }`);
         });
     }
 }
-
-// Application Entry: Grab instance of `Server` and call `bootstrap()`.
-const server: Server = Container.get<Server>(Server);
-server.bootstrap();
