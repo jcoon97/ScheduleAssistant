@@ -1,7 +1,10 @@
-import { Request } from "express";
 import core from "express-serve-static-core";
 
 declare module "express" {
+    interface Request {
+        jwtDecoded: unknown;
+    }
+
     interface Query extends core.Query { }
 
     interface GoogleCallbackQuery extends Query {

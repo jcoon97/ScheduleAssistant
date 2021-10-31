@@ -1,14 +1,15 @@
 import { IncomingWebhook, IncomingWebhookResult } from "@slack/webhook";
 import { Service } from "typedi";
 import { getLogger } from "../logger";
-import { getEnvOrDefault } from "../utils/env";
 import { BaseMessage } from "./messages/BaseMessage";
 
 type Constructable<T extends BaseMessage> = new () => T;
 
 @Service()
 export class Webhook {
-    static readonly SLACK_WEBHOOK_URL: string | null = getEnvOrDefault("SLACK_WEBHOOK_URL", null);
+    static readonly SLACK_WEBHOOK_URL: string | null = process.env.SLACK_WEBHOOK_URL
+        ? <string>process.env.SLACK_WEBHOOK_URL
+        : null;
 
     private readonly incomingWebhook: IncomingWebhook;
 

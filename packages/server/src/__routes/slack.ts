@@ -5,8 +5,10 @@ import {
     CoverageRequest,
     CoverageRequestArguments,
     CoverageRequestProgram
-} from "../../slack/messages/CoverageRequest";
-import { Webhook } from "../../slack/Webhook";
+} from "../slack/messages/CoverageRequest";
+import { Webhook } from "../slack/Webhook";
+
+// TODO: Actually create a real implementation of this file and remove this directory...
 
 const router: Router = Router();
 const slack: Webhook = Container.get(Webhook);
