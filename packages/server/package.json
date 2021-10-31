@@ -30,7 +30,7 @@
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.9.0",
     "tslog": "^3.2.2",
-    "type-graphql": "^1.1.1",
+    "type-graphql": "^1.2.0-rc.1",
     "typedi": "^0.10.0",
     "typeorm": "^0.2.38",
     "typeorm-typedi-extensions": "^0.4.1"

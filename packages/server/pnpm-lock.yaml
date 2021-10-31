@@ -24,7 +24,7 @@ specifiers:
   rimraf: ^3.0.2
   routing-controllers: ^0.9.0
   tslog: ^3.2.2
-  type-graphql: ^1.1.1
+  type-graphql: ^1.2.0-rc.1
   typedi: ^0.10.0
   typeorm: ^0.2.38
   typeorm-typedi-extensions: ^0.4.1
@@ -48,7 +48,7 @@ dependencies:
   reflect-metadata: 0.1.13
   routing-controllers: 0.9.0_113d387208af7a399f8469d1c934d79f
   tslog: 3.2.2
-  type-graphql: 1.1.1_3f8b4f2f78b69a6d60ad913ae8af38d7
+  type-graphql: 1.2.0-rc.1_3f8b4f2f78b69a6d60ad913ae8af38d7
   typedi: 0.10.0
   typeorm: 0.2.38_pg@8.7.1
   typeorm-typedi-extensions: 0.4.1_typedi@0.10.0+typeorm@0.2.38
@@ -2639,13 +2639,13 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /type-graphql/1.1.1_3f8b4f2f78b69a6d60ad913ae8af38d7:
-    resolution: {integrity: sha512-iOOWVn0ehCYMukmnXStbkRwFE9dcjt7/oDcBS1JyQZo9CbhlIll4lHHps54HMEk4A4c8bUPd+DjK8w1/ZrxB4A==}
-    engines: {node: '>= 10.3'}
+  /type-graphql/1.2.0-rc.1_3f8b4f2f78b69a6d60ad913ae8af38d7:
+    resolution: {integrity: sha512-W1p51DN+n/zX4ilunMC6/FcyGlx/ND3hreQ0ARDhfhyR9oGtfKzQNnkHhk8uXlYm2zzyTEd1LkRHJr8bbnRlIA==}
+    engines: {node: '>= 10.13'}
     requiresBuild: true
     peerDependencies:
       class-validator: '>=0.12.0'
-      graphql: ^15.3.0
+      graphql: ^15.5.0
     dependencies:
       '@types/glob': 7.2.0
       '@types/node': 16.11.6

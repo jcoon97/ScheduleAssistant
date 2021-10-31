@@ -1,19 +1,18 @@
-import { Ctx, Mutation, Query, Resolver } from "type-graphql";
+import { Authorized, Ctx, Query, Resolver } from "type-graphql";
+import { Repository } from "typeorm";
+import { InjectRepository } from "typeorm-typedi-extensions";
 import { Context } from "../context";
-import { getLogger } from "../logger";
+import User from "../entities/User";
 
-// @Resolver(() => User)
-@Resolver()
-// export class UserResolver implements ResolverInterface<User> {
+@Resolver(() => User)
 export class UserResolver {
-    @Query(() => String, { nullable: true })
-    me(@Ctx() ctx: Context): string | undefined {
-        getLogger().info("Context: ", ctx);
-        return <string | undefined>ctx.user;
+    constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {
+
     }
 
-    @Mutation(() => String)
-    test(): string {
-        return "Hello, World!";
+    @Authorized()
+    @Query(() => User, { nullable: true })
+    async me(@Ctx() ctx: Context): Promise<User | undefined> {
+        return await this.userRepository.findOne({ id: ctx.userId });
     }
 }

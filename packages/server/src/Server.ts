@@ -1,5 +1,5 @@
 import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
-import { ApolloServer, ExpressContext } from "apollo-server-express";
+import { ApolloServer } from "apollo-server-express";
 import dotenv from "dotenv";
 import express, { Express } from "express";
 import jwt from "express-jwt";
@@ -9,9 +9,10 @@ import "reflect-metadata";
 import { useContainer as useContainerRoutingControllers, useExpressServer } from "routing-controllers";
 import { buildSchema } from "type-graphql";
 import { Service } from "typedi";
-import { Connection, createConnection, Repository, useContainer as useContainerTypeORM } from "typeorm";
+import { createConnection, useContainer as useContainerTypeORM } from "typeorm";
 import { Container } from "typeorm-typedi-extensions";
-import { Context } from "./context";
+import { AuthChecker } from "./AuthChecker";
+import { getContextFromRequest } from "./context";
 import { GoogleController } from "./controllers/GoogleController";
 import User from "./entities/User";
 import { getLogger } from "./logger";
@@ -23,41 +24,17 @@ useContainerRoutingControllers(Container);
 
 @Service()
 export class Server {
-    static readonly PORT: number = parseInt(
-        process.env.PORT ? process.env.PORT : "3000"
-    );
+    static readonly PATH: string = "/graphql";
+    static readonly PORT: number = parseInt(process.env.PORT ? process.env.PORT : "3000");
 
-    private connection?: Connection;
     private httpServer?: HTTPServer;
-    private graphQLPath: string = "/graphql";
 
     constructor() {
         this.initServer();
     }
 
-    // TODO: Cannot generate context while connection is undefined...
-    private async getContext(ctx: ExpressContext): Promise<Context | null> {
-        const jwtId: string = (<any>ctx.req.jwtDecoded)?.id;
-        let user: User | undefined = undefined;
-
-        if (jwtId) {
-            if (!this.connection) {
-                getLogger().error("Failed to generate context, connection is undefined");
-                return null;
-            }
-
-            const userRepository: Repository<User> = this.connection.getRepository(User);
-            user = await userRepository.findOne({ id: parseInt(jwtId) });
-        }
-
-        return <Context>{
-            req: ctx.req,
-            user
-        };
-    }
-
     private async initConnection(): Promise<void> {
-        this.connection = await createConnection({
+        await createConnection({
             name: "default",
             type: "postgres",
 
@@ -83,6 +60,7 @@ export class Server {
 
         // Create GraphQL schema from TypeGraphQL
         const schema: GraphQLSchema = await buildSchema({
+            authChecker: AuthChecker,
             container: Container,
             emitSchemaFile: true,
             resolvers: [ UserResolver ]
@@ -90,13 +68,13 @@ export class Server {
 
         // Create ApolloServer instance
         const apolloServer: ApolloServer = new ApolloServer({
-            context: this.getContext,
+            context: getContextFromRequest,
             schema,
             plugins: [ ApolloServerPluginDrainHttpServer({ httpServer }) ]
         });
 
         // Apply Express-specific settings, e.g. using `routing-controllers`
-        app.use(this.graphQLPath, jwt({
+        app.use(Server.PATH, jwt({
             algorithms: [ "HS512" ],
             credentialsRequired: false,
             userProperty: "jwtDecoded", // Remap `req.user` to `req.jwtDecoded`
@@ -109,7 +87,7 @@ export class Server {
 
         // Start ApolloServer & apply Express middleware(s)
         await apolloServer.start();
-        apolloServer.applyMiddleware({ app, path: this.graphQLPath });
+        apolloServer.applyMiddleware({ app, path: Server.PATH });
 
         // Bind constant(s) to class properties
         this.httpServer = httpServer;
@@ -122,7 +100,7 @@ export class Server {
         }
 
         this.httpServer.listen(Server.PORT, () => {
-            getLogger().info(`Apollo server started on http://localhost:${ Server.PORT }${ this.graphQLPath }`);
+            getLogger().info(`Apollo server started on http://localhost:${ Server.PORT }${ Server.PATH }`);
             getLogger().info(`Express server started on http://localhost:${ Server.PORT }`);
         });
     }

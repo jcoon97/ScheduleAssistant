@@ -2,7 +2,7 @@ import core from "express-serve-static-core";
 
 declare module "express" {
     interface Request {
-        jwtDecoded: unknown;
+        jwtDecoded?: unknown;
     }
 
     interface Query extends core.Query { }

@@ -1,6 +1,17 @@
-import User from "./entities/User";
+import { ExpressContext } from "apollo-server-express";
 
 export interface Context {
     req: Express.Request & any;
-    user?: User | undefined;
+    userId?: number;
 }
+
+export const getContextFromRequest = (ctx: ExpressContext): Context => {
+    const jwtIdStr: string = (<any>ctx.req.jwtDecoded)?.id;
+    let jwtId: number | undefined = parseInt(jwtIdStr);
+    if (isNaN(jwtId)) jwtId = undefined;
+
+    return {
+        req: ctx.req,
+        userId: jwtId
+    };
+};

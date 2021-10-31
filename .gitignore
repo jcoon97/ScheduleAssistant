@@ -10,3 +10,6 @@ node_modules
 
 # Environment variable (use `.env.example` for template)
 .env
+
+# Directory that contains unfinished code that will be implemented a later date
+todo
