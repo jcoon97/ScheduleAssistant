@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
-import { GoogleCallbackRequest, Response } from "express";
+import { GoogleCallbackRequest } from "express";
 import { GaxiosError } from "gaxios";
 import { google, oauth2_v2 } from "googleapis";
-import { Get, InternalServerError, JsonController, Req, Res } from "routing-controllers";
+import { Get, InternalServerError, JsonController, Req } from "routing-controllers";
 import { Service } from "typedi";
 import { Repository } from "typeorm";
 import { InjectRepository } from "typeorm-typedi-extensions";
@@ -12,6 +12,20 @@ import { getUserInfo } from "../utils/google";
 import { generateToken } from "../utils/jwt";
 
 dotenv.config();
+
+interface BaseResponse {
+    success: boolean;
+}
+
+interface AuthResponse extends BaseResponse {
+    success: true;
+    url: string;
+}
+
+interface CallbackResponse extends BaseResponse {
+    success: true;
+    token: string;
+}
 
 @JsonController("/api/google")
 @Service()
@@ -27,7 +41,7 @@ export class GoogleController {
     }
 
     @Get("/auth")
-    getAuth(@Res() res: Response): Response {
+    getAuth(): AuthResponse {
         const url: string = GoogleController.OAUTH.generateAuthUrl({
             access_type: "offline",
             hd: "2u.com",
@@ -38,14 +52,14 @@ export class GoogleController {
             ]
         });
 
-        return res.json({
+        return {
             success: true,
             url
-        });
+        };
     }
 
     @Get("/callback")
-    async getCallback(@Req() req: GoogleCallbackRequest, @Res() res: Response): Promise<Response> {
+    async getCallback(@Req() req: GoogleCallbackRequest): Promise<CallbackResponse> {
         try {
             const { tokens } = await GoogleController.OAUTH.getToken(req.query.code);
             GoogleController.OAUTH.setCredentials(tokens);
@@ -73,10 +87,10 @@ export class GoogleController {
             // Generate a JWT token for the user and return it to the client
             const token: string = await generateToken(retUser);
 
-            return res.json({
+            return {
                 success: true,
                 token
-            });
+            };
         } catch (err) {
             getLogger().error(err);
 
