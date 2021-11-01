@@ -10,3 +10,14 @@ services:
     ports:
       - "5432:5432/tcp"
     restart: always
+  web:
+    build: .
+    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; pnpm run start:dev'
+    depends_on:
+      - db
+    ports:
+      - "3000:3000/tcp"
+    restart: on-failure
+    volumes:
+      - "./:/usr/src/app"
+      - "/usr/src/app/node_modules"
