@@ -423,7 +423,7 @@ packages:
     resolution: {integrity: sha512-pJIqIN7UXYDHcNY/IRi7H9AvdV+aHi96gv/nPmnLsP/LbWMJvMuQY3jQ2obW0P+rO3bx05oYHLsVjwHHaXlEQA==}
     engines: {node: '>=12.0'}
     dependencies:
-      node-fetch: 2.6.5
+      node-fetch: 2.6.6
     dev: false
 
   /apollo-server-errors/3.2.0_graphql@15.7.2:
@@ -644,7 +644,7 @@ packages:
     dependencies:
       '@types/validator': 13.6.6
       libphonenumber-js: 1.9.39
-      validator: 13.6.0
+      validator: 13.7.0
     dev: false
 
   /cli-highlight/2.1.11:
@@ -673,7 +673,7 @@ packages:
     dependencies:
       inflation: 2.0.0
       qs: 6.10.1
-      raw-body: 2.4.0
+      raw-body: 2.4.1
       type-is: 1.6.18
     dev: false
     optional: true
@@ -1045,7 +1045,7 @@ packages:
       extend: 3.0.2
       https-proxy-agent: 5.0.0
       is-stream: 2.0.1
-      node-fetch: 2.6.5
+      node-fetch: 2.6.6
     transitivePeerDependencies:
       - supports-color
 
@@ -1447,7 +1447,7 @@ packages:
     requiresBuild: true
     dependencies:
       debug: 3.2.7
-      http-errors: 1.7.3
+      http-errors: 1.8.0
       koa-compose: 3.2.1
       methods: 1.1.2
       path-to-regexp: 1.8.0
@@ -1473,7 +1473,7 @@ packages:
       escape-html: 1.0.3
       fresh: 0.5.2
       http-assert: 1.5.0
-      http-errors: 1.7.3
+      http-errors: 1.8.0
       is-generator-function: 1.0.10
       koa-compose: 4.1.0
       koa-convert: 2.0.0
@@ -1671,8 +1671,8 @@ packages:
     resolution: {integrity: sha1-esGavSl+Caf3KnFUXZUbUX5N3iw=}
     dev: true
 
-  /node-fetch/2.6.5:
-    resolution: {integrity: sha512-mmlIVHJEu5rnIxgEgez6b9GgWXbkZj5YZ7fx+2r94a2E+Uirsp6HsPTPlomfdHtpt/B0cdKviwkoaM6pyvUOpQ==}
+  /node-fetch/2.6.6:
+    resolution: {integrity: sha512-Z8/6vRlTUChSdIgMa51jxQ4lrw/Jy5SOW10ObaA47/RElsAN2c5Pn8bTgFGWn/ibwzXTE8qwr1Yzx28vsecXEA==}
     engines: {node: 4.x || >=6.0.0}
     dependencies:
       whatwg-url: 5.0.0
@@ -1904,6 +1904,17 @@ packages:
       unpipe: 1.0.0
     dev: false
 
+  /raw-body/2.4.1:
+    resolution: {integrity: sha512-9WmIKF6mkvA0SLmA2Knm9+qj89e+j1zqgyn8aXGd7+nAduPoqgI9lO57SAZNn/Byzo5P7JhXTyg9PzaJbH73bA==}
+    engines: {node: '>= 0.8'}
+    dependencies:
+      bytes: 3.1.0
+      http-errors: 1.7.3
+      iconv-lite: 0.4.24
+      unpipe: 1.0.0
+    dev: false
+    optional: true
+
   /readable-stream/1.1.14:
     resolution: {integrity: sha1-fPTFTvZI44EwhMY23SB54WbAgdk=}
     dependencies:
@@ -1965,7 +1976,7 @@ packages:
     dependencies:
       class-transformer: 0.4.0
       class-validator: 0.13.1
-      cookie: 0.4.0
+      cookie: 0.4.1
       express-session: 1.17.2
       glob: 7.2.0
       reflect-metadata: 0.1.13
@@ -2397,8 +2408,8 @@ packages:
     hasBin: true
     dev: false
 
-  /validator/13.6.0:
-    resolution: {integrity: sha512-gVgKbdbHgtxpRyR8K0O6oFZPhhB5tT1jeEHZR0Znr9Svg03U0+r9DXWMrnRAB+HtCStDQKlaIZm42tVsVjqtjg==}
+  /validator/13.7.0:
+    resolution: {integrity: sha512-nYXQLCBkpJ8X6ltALua9dRrZDHVYxjJ1wgskNt1lH9fzGjs3tgojGSCBjmEPwkWS1y29+DrizMTW19Pr9uB2nw==}
     engines: {node: '>= 0.10'}
     dev: false
 
