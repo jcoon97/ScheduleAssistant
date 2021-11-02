@@ -4,10 +4,10 @@ import { GaxiosError } from "gaxios";
 import { google, oauth2_v2 } from "googleapis";
 import { Get, InternalServerError, JsonController, Req } from "routing-controllers";
 import { Service } from "typedi";
-import { Repository } from "typeorm";
 import { InjectRepository } from "typeorm-typedi-extensions";
 import User from "../entities/User";
 import { getLogger } from "../logger";
+import { UserRepository } from "../repositories/UserRepository";
 import { getUserInfo } from "../utils/google";
 import { generateToken } from "../utils/jwt";
 
@@ -36,7 +36,7 @@ export class GoogleController {
         "http://localhost:3000/api/google/callback" // TODO: Change value in production; don't hardcode
     );
 
-    constructor(@InjectRepository(User) private readonly userRepository: Repository<User>) {
+    constructor(@InjectRepository(User) private readonly userRepository: UserRepository) {
 
     }
 
@@ -70,19 +70,15 @@ export class GoogleController {
             }).userinfo;
 
             const resUser: oauth2_v2.Schema$Userinfo = await getUserInfo(userInfo);
-            let retUser: User; // `User` object that will be used when generating JWT token
-            const foundUser: User | undefined = await this.userRepository.findOne({ googleId: resUser.id! });
 
-            if (foundUser) {
-                retUser = foundUser;
-            } else {
-                const newUser: User = new User();
-                newUser.firstName = resUser.given_name ?? undefined;
-                newUser.lastName = resUser.family_name ?? undefined;
-                newUser.emailAddress = resUser.email!;
-                newUser.googleId = resUser.id!;
-                retUser = await this.userRepository.save(newUser);
-            }
+            const retUser: User = await this.userRepository.findOneOrInsert({
+                googleId: resUser.id!
+            }, {
+                firstName: resUser.given_name ?? undefined,
+                lastName: resUser.family_name ?? undefined,
+                emailAddress: resUser.email!,
+                googleId: resUser.id!
+            });
 
             // Generate a JWT token for the user and return it to the client
             const token: string = await generateToken(retUser);
