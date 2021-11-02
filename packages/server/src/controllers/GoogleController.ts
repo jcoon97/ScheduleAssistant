@@ -77,8 +77,8 @@ export class GoogleController {
                 retUser = foundUser;
             } else {
                 const newUser: User = new User();
-                newUser.firstName = resUser.given_name!; // TODO: May be undefined or null
-                newUser.lastName = resUser.family_name!; // TODO: May be undefined or null
+                newUser.firstName = resUser.given_name ?? undefined;
+                newUser.lastName = resUser.family_name ?? undefined;
                 newUser.emailAddress = resUser.email!;
                 newUser.googleId = resUser.id!;
                 retUser = await this.userRepository.save(newUser);
