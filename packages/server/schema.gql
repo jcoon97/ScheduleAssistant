@@ -12,6 +12,11 @@ type Query {
   me: User
 }
 
+enum RoleType {
+  ADMIN
+  DEFAULT
+}
+
 type User {
   createdDate: DateTime!
   deletedDate: DateTime
@@ -20,5 +25,6 @@ type User {
   googleId: String!
   id: ID!
   lastName: String
+  roleType: RoleType!
   updatedDate: DateTime!
 }
