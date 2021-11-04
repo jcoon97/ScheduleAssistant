@@ -2,7 +2,7 @@ import { AuthCheckerInterface, ResolverData } from "type-graphql";
 import { Service } from "typedi";
 import { InjectRepository } from "typeorm-typedi-extensions";
 import { Context } from "./context";
-import User, { RoleType } from "./entities/User";
+import { RoleType, User } from "./entities/User";
 import { UserRepository } from "./repositories/UserRepository";
 
 @Service()

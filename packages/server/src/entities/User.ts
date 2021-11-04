@@ -9,7 +9,7 @@ export enum RoleType {
 
 @Entity("users")
 @ObjectType()
-export default class User extends BaseEntity {
+export class User extends BaseEntity {
     @Column({ name: "first_name", nullable: true })
     @Field(() => String, { nullable: true })
     firstName?: string;

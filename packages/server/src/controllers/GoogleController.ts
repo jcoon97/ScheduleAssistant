@@ -5,7 +5,7 @@ import { google, oauth2_v2 } from "googleapis";
 import { Get, InternalServerError, JsonController, Req } from "routing-controllers";
 import { Service } from "typedi";
 import { InjectRepository } from "typeorm-typedi-extensions";
-import User from "../entities/User";
+import { User } from "../entities/User";
 import { getLogger } from "../logger";
 import { UserRepository } from "../repositories/UserRepository";
 import { getUserInfo } from "../utils/google";

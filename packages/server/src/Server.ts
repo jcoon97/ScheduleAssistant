@@ -14,7 +14,7 @@ import { Container } from "typeorm-typedi-extensions";
 import { AuthChecker } from "./AuthChecker";
 import { getContextFromRequest } from "./context";
 import { GoogleController } from "./controllers/GoogleController";
-import User from "./entities/User";
+import { User } from "./entities/User";
 import { getLogger } from "./logger";
 import { UserResolver } from "./resolvers/UserResolver";
 

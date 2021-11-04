@@ -4,7 +4,7 @@ export class BaseRepository<Entity extends ObjectLiteral> extends Repository<Ent
     /**
      * Attempts to find an entity based on the `findConditions` specified. If one was found, then it
      * is returned immediately; if one was not found, then it is instead created using the `insertOptions`
-     * specified, saved to the database, and then returned back
+     * specified, saved to the database, and then returned
      */
     async findOneOrInsert(findConditions: FindConditions<Entity>, insertOptions: DeepPartial<Entity>): Promise<Entity> {
         const foundEntity: Entity | undefined = await this.findOne(findConditions);
