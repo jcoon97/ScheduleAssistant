@@ -1,6 +1,7 @@
 import { Field, ObjectType, registerEnumType } from "type-graphql";
-import { Column, Entity } from "typeorm";
-import { BaseEntity } from "./BaseEntity";
+import { Column, Entity, ManyToOne } from "typeorm";
+import { BaseEntity, Lazy } from "./BaseEntity";
+import { Program } from "./Program";
 
 export enum RoleType {
     DEFAULT = "DEFAULT",
@@ -8,7 +9,7 @@ export enum RoleType {
 }
 
 @Entity("users")
-@ObjectType()
+@ObjectType({ implements: BaseEntity })
 export class User extends BaseEntity {
     @Column({ name: "first_name", nullable: true })
     @Field(() => String, { nullable: true })
@@ -29,6 +30,10 @@ export class User extends BaseEntity {
     @Column({ type: "enum", enum: RoleType, default: RoleType.DEFAULT })
     @Field(() => RoleType)
     roleType!: RoleType;
+
+    @Field(() => Program, { nullable: true })
+    @ManyToOne(() => Program, program => program.users, { nullable: true })
+    program?: Lazy<Program>;
 }
 
 registerEnumType(RoleType, {

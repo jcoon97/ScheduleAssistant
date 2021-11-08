@@ -14,8 +14,10 @@ import { Container } from "typeorm-typedi-extensions";
 import { AuthChecker } from "./AuthChecker";
 import { getContextFromRequest } from "./context";
 import { GoogleController } from "./controllers/GoogleController";
+import { Program } from "./entities/Program";
 import { User } from "./entities/User";
 import { getLogger } from "./logger";
+import { ProgramResolver } from "./resolvers/ProgramResolver";
 import { UserResolver } from "./resolvers/UserResolver";
 
 dotenv.config();
@@ -43,7 +45,7 @@ export class Server {
             password: <string>process.env.DB_PASSWORD,
             database: <string>process.env.DB_DATABASE,
 
-            entities: [ User ],
+            entities: [ Program, User ],
             logging: true,
             synchronize: !(process.env.NODE_ENV === "production")
         });
@@ -63,7 +65,7 @@ export class Server {
             authChecker: AuthChecker,
             container: Container,
             emitSchemaFile: true,
-            resolvers: [ UserResolver ]
+            resolvers: [ ProgramResolver, UserResolver ]
         });
 
         // Create ApolloServer instance

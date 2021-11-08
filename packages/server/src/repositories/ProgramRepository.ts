@@ -1,10 +1,10 @@
 import { Service } from "typedi";
 import { EntityRepository } from "typeorm";
-import { User } from "../entities/User";
+import { Program } from "../entities/Program";
 import { BaseRepository } from "./BaseRepository";
 
-@EntityRepository(User)
+@EntityRepository(Program)
 @Service()
-export class UserRepository extends BaseRepository<User> {
+export class ProgramRepository extends BaseRepository<Program> {
 
 }

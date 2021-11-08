@@ -15,4 +15,4 @@ RUN pnpm run cleanbuild
 
 EXPOSE 3000
 
-CMD ["pnpm", "run", "start:dev"]
+CMD ["pnpm", "run", "start"]

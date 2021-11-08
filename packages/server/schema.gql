@@ -3,10 +3,42 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+input AssignUserProgramInput {
+  programId: ID!
+  userId: ID!
+}
+
+input CreateProgramInput {
+  abbreviation: String!
+  name: String!
+}
+
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
 scalar DateTime
+
+type Mutation {
+  programAssignUser(input: AssignUserProgramInput!): Program!
+  programCreate(input: CreateProgramInput!): Program!
+}
+
+interface Node {
+  createdDate: DateTime!
+  deletedDate: DateTime
+  id: ID!
+  updatedDate: DateTime!
+}
+
+type Program implements Node {
+  abbreviation: String!
+  createdDate: DateTime!
+  deletedDate: DateTime
+  id: ID!
+  name: String!
+  updatedDate: DateTime!
+  users: [User!]
+}
 
 type Query {
   me: User
@@ -17,7 +49,7 @@ enum RoleType {
   DEFAULT
 }
 
-type User {
+type User implements Node {
   createdDate: DateTime!
   deletedDate: DateTime
   emailAddress: String!
@@ -25,6 +57,7 @@ type User {
   googleId: String!
   id: ID!
   lastName: String
+  program: Program
   roleType: RoleType!
   updatedDate: DateTime!
 }

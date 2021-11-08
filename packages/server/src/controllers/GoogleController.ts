@@ -5,7 +5,7 @@ import { google, oauth2_v2 } from "googleapis";
 import { Get, InternalServerError, JsonController, Req } from "routing-controllers";
 import { Service } from "typedi";
 import { InjectRepository } from "typeorm-typedi-extensions";
-import { User } from "../entities/User";
+import { RoleType, User } from "../entities/User";
 import { getLogger } from "../logger";
 import { UserRepository } from "../repositories/UserRepository";
 import { getUserInfo } from "../utils/google";
@@ -36,9 +36,8 @@ export class GoogleController {
         "http://localhost:3000/api/google/callback" // TODO: Change value in production; don't hardcode
     );
 
-    constructor(@InjectRepository(User) private readonly userRepository: UserRepository) {
-
-    }
+    @InjectRepository(User)
+    private readonly userRepository!: UserRepository;
 
     @Get("/auth")
     getAuth(): AuthResponse {
@@ -71,13 +70,14 @@ export class GoogleController {
 
             const resUser: oauth2_v2.Schema$Userinfo = await getUserInfo(userInfo);
 
-            const retUser: User = await this.userRepository.findOneOrInsert({
+            const retUser: User = await this.userRepository.findOneOrCreate({
                 googleId: resUser.id!
             }, {
                 firstName: resUser.given_name ?? undefined,
                 lastName: resUser.family_name ?? undefined,
                 emailAddress: resUser.email!,
-                googleId: resUser.id!
+                googleId: resUser.id!,
+                roleType: RoleType.ADMIN // TODO: Please, don't include this line in production
             });
 
             // Generate a JWT token for the user and return it to the client

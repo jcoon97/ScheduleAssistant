@@ -1,7 +1,9 @@
-import { Field, ID, ObjectType } from "type-graphql";
-import { CreateDateColumn, DeleteDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Field, ID, InterfaceType } from "type-graphql";
+import { CreateDateColumn, DeleteDateColumn, ObjectLiteral, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
-@ObjectType()
+export type Lazy<T extends ObjectLiteral> = Promise<T> | T;
+
+@InterfaceType("Node")
 export abstract class BaseEntity {
     @Field(() => ID)
     @PrimaryGeneratedColumn({ name: "id" })
