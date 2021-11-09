@@ -47,9 +47,8 @@ export class Server {
 
             entities: [ Program, User ],
             logging: true,
-            synchronize: !(process.env.NODE_ENV === "production")
+            synchronize: process.env.NODE_ENV !== "production"
         });
-
         getLogger().info("Successfully established connection to database server");
     }
 

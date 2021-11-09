@@ -7,20 +7,17 @@ import { UserRepository } from "./repositories/UserRepository";
 
 @Service()
 export class AuthChecker implements AuthCheckerInterface<Context> {
-    constructor(@InjectRepository(User) private readonly userRepository: UserRepository) {
-
-    }
+    @InjectRepository(User)
+    private readonly userRepository!: UserRepository;
 
     async check({ context }: ResolverData<Context>, roles: string[]): Promise<boolean> {
         // Immediately return if no `userId` exists in GQL context
         if (!context.userId) return false;
-
         const user: User | undefined = await this.userRepository.findOne({ id: context.userId });
 
-        // First, check if user is authenticated when no roles are present
+        // Check if the user is authenticated when no roles and if the user
+        // is authorized when roles are present
         if (roles.length === 0) return user !== undefined;
-
-        // Second, check if user is authenticated when roles are present
         if (!user) return false;
 
         // Finally, check if user is authorized when roles are present

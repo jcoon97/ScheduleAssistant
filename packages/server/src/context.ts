@@ -5,7 +5,7 @@ export interface Context {
     userId?: number;
 }
 
-export const getContextFromRequest = (ctx: ExpressContext): Context => {
+export function getContextFromRequest(ctx: ExpressContext): Context {
     const jwtIdStr: string = (<any>ctx.req.jwtDecoded)?.id;
     let jwtId: number | undefined = parseInt(jwtIdStr);
     if (isNaN(jwtId)) jwtId = undefined;
@@ -14,4 +14,4 @@ export const getContextFromRequest = (ctx: ExpressContext): Context => {
         req: ctx.req,
         userId: jwtId
     };
-};
+}

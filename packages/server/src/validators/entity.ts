@@ -6,7 +6,7 @@ import {
 } from "class-validator";
 import { EntityTarget, getRepository, ObjectLiteral, Repository } from "typeorm";
 
-export const checkEntity = <T extends ObjectLiteral>(): ValidatorConstraintInterface => {
+export function checkEntity<T extends ObjectLiteral>(): ValidatorConstraintInterface {
     return {
         async validate(value: any, args: ValidationArguments): Promise<boolean> {
             const [ entityClass, entityPropertyName, invertResult ]: [ EntityTarget<T>, keyof T, boolean | undefined ] = <any>args.constraints;
@@ -15,13 +15,13 @@ export const checkEntity = <T extends ObjectLiteral>(): ValidatorConstraintInter
             return (invertResult ? entity === undefined : entity !== undefined);
         }
     };
-};
+}
 
-export const IsEntityFound = <T extends ObjectLiteral>(
+export function IsEntityFound<T extends ObjectLiteral>(
     entityClass: EntityTarget<T>,
     entityPropertyName?: keyof T,
     validationOptions?: ValidationOptions
-): Function => {
+): Function {
     return function (object: Object, propertyName: string): void {
         registerDecorator({
             constraints: [ entityClass, entityPropertyName || propertyName ],
@@ -32,13 +32,13 @@ export const IsEntityFound = <T extends ObjectLiteral>(
             validator: checkEntity()
         });
     };
-};
+}
 
-export const IsEntityNotFound = <T extends ObjectLiteral>(
+export function IsEntityNotFound<T extends ObjectLiteral>(
     entityClass: EntityTarget<T>,
     entityPropertyName?: keyof T,
     validationOptions?: ValidationOptions
-): Function => {
+): Function {
     return function (object: Object, propertyName: string): void {
         registerDecorator({
             constraints: [ entityClass, entityPropertyName || propertyName, true ],
@@ -49,4 +49,4 @@ export const IsEntityNotFound = <T extends ObjectLiteral>(
             validator: checkEntity()
         });
     };
-};
+}

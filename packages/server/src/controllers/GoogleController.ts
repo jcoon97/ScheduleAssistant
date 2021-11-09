@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import { GoogleCallbackRequest } from "express";
 import { GaxiosError } from "gaxios";
 import { google, oauth2_v2 } from "googleapis";
@@ -11,19 +10,11 @@ import { UserRepository } from "../repositories/UserRepository";
 import { getUserInfo } from "../utils/google";
 import { generateToken } from "../utils/jwt";
 
-dotenv.config();
-
-interface BaseResponse {
-    success: boolean;
-}
-
-interface AuthResponse extends BaseResponse {
-    success: true;
+interface AuthResponse {
     url: string;
 }
 
-interface CallbackResponse extends BaseResponse {
-    success: true;
+interface CallbackResponse {
     token: string;
 }
 
@@ -50,11 +41,7 @@ export class GoogleController {
                 "https://www.googleapis.com/auth/userinfo.profile"
             ]
         });
-
-        return {
-            success: true,
-            url
-        };
+        return { url };
     }
 
     @Get("/callback")
@@ -82,11 +69,7 @@ export class GoogleController {
 
             // Generate a JWT token for the user and return it to the client
             const token: string = await generateToken(retUser);
-
-            return {
-                success: true,
-                token
-            };
+            return { token };
         } catch (err) {
             getLogger().error(err);
 
