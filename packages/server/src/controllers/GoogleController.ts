@@ -10,6 +10,8 @@ import { UserRepository } from "../repositories/UserRepository";
 import { getUserInfo } from "../utils/google";
 import { generateToken } from "../utils/jwt";
 
+require("dotenv").config()
+
 interface AuthResponse {
     url: string;
 }

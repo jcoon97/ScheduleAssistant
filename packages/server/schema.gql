@@ -4,6 +4,12 @@
 # -----------------------------------------------
 
 input AssignUserProgramInput {
+  isLeadOrManager: Boolean
+  programId: ID!
+  userId: ID!
+}
+
+input ChangeProgramLeadOrManagerInput {
   programId: ID!
   userId: ID!
 }
@@ -20,6 +26,7 @@ scalar DateTime
 
 type Mutation {
   programAssignUser(input: AssignUserProgramInput!): Program!
+  programChangeLeadOrManager(input: ChangeProgramLeadOrManagerInput!): Program!
   programCreate(input: CreateProgramInput!): Program!
 }
 
@@ -42,6 +49,7 @@ type Program implements Node {
 
 type Query {
   me: User
+  program(id: ID!): Program!
 }
 
 enum RoleType {

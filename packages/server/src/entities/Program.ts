@@ -1,5 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
-import { Column, Entity, OneToMany } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from "typeorm";
 import { BaseEntity, Lazy } from "./BaseEntity";
 import { User } from "./User";
 
@@ -13,6 +13,10 @@ export class Program extends BaseEntity {
     @Column({ name: "abbreviation" })
     @Field(() => String)
     abbreviation!: string;
+
+    @OneToOne(() => User, { lazy: true })
+    @JoinColumn({ name: "lead_manager_id" })
+    leadOrManager?: Lazy<User>;
 
     @Field(() => [ User ], { nullable: true })
     @OneToMany(() => User, user => user.program, { lazy: true })

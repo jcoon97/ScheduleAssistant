@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import { User } from "../entities/User";
 
+require("dotenv").config();
+
 const secret: string = <string>process.env.JWT_TOKEN_SECRET;
 
 export function generateToken(user: User): Promise<string> {
