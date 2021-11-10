@@ -1,4 +1,4 @@
-import { Arg, Args, Authorized, FieldResolver, Mutation, Query, Resolver, ResolverInterface, Root } from "type-graphql";
+import { Arg, Args, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import { InjectRepository } from "typeorm-typedi-extensions";
 import { GetProgramByIdArgs } from "../args-types/GetProgramByIdArgs";
 import { Program } from "../entities/Program";
@@ -10,7 +10,7 @@ import { ProgramRepository } from "../repositories/ProgramRepository";
 import { UserRepository } from "../repositories/UserRepository";
 
 @Resolver(() => Program)
-export class ProgramResolver implements ResolverInterface<Program> {
+export class ProgramResolver {
     @InjectRepository(Program)
     private readonly programRepository!: ProgramRepository;
 
@@ -67,10 +67,5 @@ export class ProgramResolver implements ResolverInterface<Program> {
     @Query(() => Program, { name: "program" })
     async getProgramById(@Args() args: GetProgramByIdArgs): Promise<Program> {
         return (await this.programRepository.findOne({ id: args.id }))!;
-    }
-
-    @FieldResolver()
-    async users(@Root() program: Program): Promise<User[]> {
-        return program.users;
     }
 }
