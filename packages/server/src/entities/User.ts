@@ -1,5 +1,5 @@
 import { Field, ObjectType, registerEnumType } from "type-graphql";
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { BaseEntity, Lazy } from "./BaseEntity";
 import { Program } from "./Program";
 
@@ -27,12 +27,13 @@ export class User extends BaseEntity {
     @Field(() => String)
     googleId!: string;
 
-    @Column({ type: "enum", enum: RoleType, default: RoleType.DEFAULT })
+    @Column({ type: "enum", enum: RoleType, default: RoleType.DEFAULT, name: "role_type" })
     @Field(() => RoleType)
     roleType!: RoleType;
 
     @Field(() => Program, { nullable: true })
-    @ManyToOne(() => Program, program => program.users, { nullable: true })
+    @ManyToOne(() => Program, program => program.users, { lazy: true, nullable: true })
+    @JoinColumn({ name: "program_id" })
     program?: Lazy<Program>;
 }
 

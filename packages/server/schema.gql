@@ -42,6 +42,7 @@ type Program implements Node {
   createdDate: DateTime!
   deletedDate: DateTime
   id: ID!
+  leadOrManager: User
   name: String!
   updatedDate: DateTime!
   users: [User!]

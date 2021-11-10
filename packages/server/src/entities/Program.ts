@@ -14,6 +14,7 @@ export class Program extends BaseEntity {
     @Field(() => String)
     abbreviation!: string;
 
+    @Field(() => User, { nullable: true })
     @OneToOne(() => User, { lazy: true })
     @JoinColumn({ name: "lead_manager_id" })
     leadOrManager?: Lazy<User>;
