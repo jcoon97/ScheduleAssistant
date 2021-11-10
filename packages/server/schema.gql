@@ -3,19 +3,12 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-input AssignUserProgramInput {
-  isLeadOrManager: Boolean
-  programId: ID!
-  userId: ID!
-}
-
-input ChangeProgramLeadOrManagerInput {
-  programId: ID!
-  userId: ID!
-}
-
+"""Specifies the fields for creating a new program."""
 input CreateProgramInput {
+  """Specifies an abbreviation for the program, e.g. FSF."""
   abbreviation: String!
+
+  """Specifies the name of the program, e.g. Full Stack Flex"""
   name: String!
 }
 
@@ -25,48 +18,106 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type Mutation {
-  programAssignUser(input: AssignUserProgramInput!): Program!
-  programChangeLeadOrManager(input: ChangeProgramLeadOrManagerInput!): Program!
+  """Assigns a user to a program, if they are not already assigned."""
+  programAssignUser(
+    """Specifies the program that the user will be assigned to."""
+    programId: ID!
+
+    """Specifies the user that will be assigned."""
+    userId: ID!
+  ): Program!
+
+  """Changes the program's lead or manager to a different user."""
+  programChangeLeadOrManager(
+    """Specifies the program that the user will be made lead/manager of."""
+    programId: ID!
+
+    """Specifies the user that will be made lead/manager."""
+    userId: ID!
+  ): Program!
+
+  """Creates a new program."""
   programCreate(input: CreateProgramInput!): Program!
 }
 
 interface Node {
+  """The DateTime that the node was created, in ISO 8601 format."""
   createdDate: DateTime!
-  deletedDate: DateTime
+
+  """A globally-unique identifier."""
   id: ID!
+
+  """The DateTime that the node was last updated, in ISO 8601 format."""
   updatedDate: DateTime!
 }
 
 type Program implements Node {
+  """The program's abbreviation, e.g. FSF."""
   abbreviation: String!
+
+  """The DateTime that the node was created, in ISO 8601 format."""
   createdDate: DateTime!
-  deletedDate: DateTime
+
+  """A globally-unique identifier."""
   id: ID!
+
+  """The program's lead or manager, if one has been assigned."""
   leadOrManager: User
+
+  """The program's name, e.g. Full Stack Flex."""
   name: String!
+
+  """The DateTime that the node was last updated, in ISO 8601 format."""
   updatedDate: DateTime!
+
+  """Array of users that have been assigned to the program."""
   users: [User!]
 }
 
 type Query {
+  """
+  Returns a User entity for who is currently authenticated via JWT token.
+  """
   me: User
-  program(id: ID!): Program!
+
+  """Returns a Program entity by ID."""
+  program(
+    """Specifies the ID of the program to return."""
+    id: ID!
+  ): Program!
 }
 
+"""Possible authorization roles that can be assigned to a user."""
 enum RoleType {
   ADMIN
   DEFAULT
 }
 
 type User implements Node {
+  """The DateTime that the node was created, in ISO 8601 format."""
   createdDate: DateTime!
-  deletedDate: DateTime
+
+  """The user's email address, fetched from Google."""
   emailAddress: String!
+
+  """The user's first (given) name, if specified."""
   firstName: String
+
+  """The user's Google ID"""
   googleId: String!
+
+  """A globally-unique identifier."""
   id: ID!
+
+  """The user's last (family) name, if specified."""
   lastName: String
+
+  """The program the user is assigned to, if any."""
   program: Program
+
+  """The user's current authorization level."""
   roleType: RoleType!
+
+  """The DateTime that the node was last updated, in ISO 8601 format."""
   updatedDate: DateTime!
 }

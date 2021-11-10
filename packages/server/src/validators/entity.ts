@@ -6,8 +6,11 @@ import {
 } from "class-validator";
 import { EntityTarget, getRepository, ObjectLiteral, Repository } from "typeorm";
 
-export function checkEntity<T extends ObjectLiteral>(): ValidatorConstraintInterface {
+export function checkEntity<T extends ObjectLiteral>(defaultMessage: string): ValidatorConstraintInterface {
     return {
+        defaultMessage(): string {
+            return defaultMessage;
+        },
         async validate(value: any, args: ValidationArguments): Promise<boolean> {
             const [ entityClass, entityPropertyName, invertResult ]: [ EntityTarget<T>, keyof T, boolean | undefined ] = <any>args.constraints;
             const repository: Repository<T> = getRepository(entityClass);
@@ -22,6 +25,8 @@ export function IsEntityFound<T extends ObjectLiteral>(
     entityPropertyName?: keyof T,
     validationOptions?: ValidationOptions
 ): Function {
+    const defaultMessage: string = `${ (<object>entityClass).constructor.name } could not be found via property ${ entityPropertyName }`;
+
     return function (object: Object, propertyName: string): void {
         registerDecorator({
             constraints: [ entityClass, entityPropertyName || propertyName ],
@@ -29,7 +34,7 @@ export function IsEntityFound<T extends ObjectLiteral>(
             options: validationOptions,
             propertyName: propertyName,
             target: object.constructor,
-            validator: checkEntity()
+            validator: checkEntity(defaultMessage)
         });
     };
 }
@@ -39,6 +44,8 @@ export function IsEntityNotFound<T extends ObjectLiteral>(
     entityPropertyName?: keyof T,
     validationOptions?: ValidationOptions
 ): Function {
+    const defaultMessage: string = `${ (<object>entityClass).constructor.name } already exists via property ${ entityPropertyName }`;
+
     return function (object: Object, propertyName: string): void {
         registerDecorator({
             constraints: [ entityClass, entityPropertyName || propertyName, true ],
@@ -46,7 +53,7 @@ export function IsEntityNotFound<T extends ObjectLiteral>(
             options: validationOptions,
             propertyName: propertyName,
             target: object.constructor,
-            validator: checkEntity()
+            validator: checkEntity(defaultMessage)
         });
     };
 }

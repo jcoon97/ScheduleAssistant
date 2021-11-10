@@ -3,10 +3,8 @@ import { Program } from "../entities/Program";
 import { IsEntityFound } from "../validators/entity";
 
 @ArgsType()
-export class GetProgramByIdArgs {
-    @Field(() => ID)
-    @IsEntityFound(Program, undefined, {
-        message: "Program could not be found by specified ID"
-    })
+export class ProgramByIdArgs {
+    @Field(() => ID, { description: "Specifies the ID of the program to return." })
+    @IsEntityFound(Program)
     id!: number;
 }

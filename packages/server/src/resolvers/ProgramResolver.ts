@@ -1,10 +1,10 @@
 import { Arg, Args, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import { InjectRepository } from "typeorm-typedi-extensions";
-import { GetProgramByIdArgs } from "../args-types/GetProgramByIdArgs";
+import { AssignUserProgramArgs } from "../args-types/AssignUserProgramArgs";
+import { ChangeProgramLeadManagerArgs } from "../args-types/ChangeProgramLeadManagerArgs";
+import { ProgramByIdArgs } from "../args-types/ProgramByIdArgs";
 import { Program } from "../entities/Program";
 import { RoleType, User } from "../entities/User";
-import { AssignUserProgramInput } from "../input-types/AssignUserProgramInput";
-import { ChangeProgramLeadOrManagerInput } from "../input-types/ChangeProgramLeadOrManagerInput";
 import { CreateProgramInput } from "../input-types/CreateProgramInput";
 import { ProgramRepository } from "../repositories/ProgramRepository";
 import { UserRepository } from "../repositories/UserRepository";
@@ -18,36 +18,35 @@ export class ProgramResolver {
     private readonly userRepository!: UserRepository;
 
     @Authorized(RoleType.ADMIN)
-    @Mutation(() => Program, { name: "programAssignUser" })
-    async assignProgramUser(@Arg("input") input: AssignUserProgramInput): Promise<Program> {
-        const program: Program = (await this.programRepository.findOne({ id: input.programId }))!;
-        const user: User = (await this.userRepository.findOne({ id: input.userId }))!;
+    @Mutation(() => Program, {
+        name: "programAssignUser",
+        description: "Assigns a user to a program, if they are not already assigned."
+    })
+    async assignProgramUser(@Args() args: AssignUserProgramArgs): Promise<Program> {
+        const program: Program = (await this.programRepository.findOne({ id: parseInt(args.programId) }))!;
+        const user: User = (await this.userRepository.findOne({ id: parseInt(args.userId) }))!;
         const programUsers: User[] = await program.users;
 
         // Check that user is not already present in program
-        if (programUsers.some((user: User) => user.id == input.userId)) {
+        if (programUsers.some((user: User) => user.id === parseInt(args.userId))) {
             throw new Error("User is already assigned to the specified program");
         }
 
-        // Push user to array of program users
         programUsers.push(user);
-
-        // Additionally, if the user is specified to be a lead or manager, and they are not
-        // already defined as such, then set them in the program entity
-        if (input.isLeadOrManager && ((await program.leadOrManager)?.id !== user.id)) {
-            program.leadOrManager = user;
-        }
         return this.programRepository.save(program);
     }
 
     @Authorized(RoleType.ADMIN)
-    @Mutation(() => Program, { name: "programChangeLeadOrManager" })
-    async changeProgramLeadOrManager(@Arg("input") input: ChangeProgramLeadOrManagerInput): Promise<Program> {
-        const program: Program = (await this.programRepository.findOne({ id: input.programId }))!;
-        const user: User = (await this.userRepository.findOne({ id: input.userId }))!;
+    @Mutation(() => Program, {
+        name: "programChangeLeadOrManager",
+        description: "Changes the program's lead or manager to a different user."
+    })
+    async changeProgramLeadOrManager(@Args() args: ChangeProgramLeadManagerArgs): Promise<Program> {
+        const program: Program = (await this.programRepository.findOne({ id: parseInt(args.programId) }))!;
+        const user: User = (await this.userRepository.findOne({ id: parseInt(args.userId) }))!;
         const programManager: User | undefined = await program.leadOrManager;
 
-        // Confirm that the specified user isn't already manager
+        // Check that specified user isn't already lead/manager of the program
         if (programManager?.id === user.id) {
             throw new Error("User is already the specified program lead or manager");
         }
@@ -57,15 +56,21 @@ export class ProgramResolver {
     }
 
     @Authorized(RoleType.ADMIN)
-    @Mutation(() => Program, { name: "programCreate" })
+    @Mutation(() => Program, {
+        name: "programCreate",
+        description: "Creates a new program."
+    })
     async createProgram(@Arg("input") input: CreateProgramInput): Promise<Program> {
         const program = this.programRepository.create({ ...input });
         return this.programRepository.save(program);
     }
 
     @Authorized()
-    @Query(() => Program, { name: "program" })
-    async getProgramById(@Args() args: GetProgramByIdArgs): Promise<Program> {
+    @Query(() => Program, {
+        name: "program",
+        description: "Returns a Program entity by ID."
+    })
+    async getProgramById(@Args() args: ProgramByIdArgs): Promise<Program> {
         return (await this.programRepository.findOne({ id: args.id }))!;
     }
 }
