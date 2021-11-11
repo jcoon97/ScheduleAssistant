@@ -6,8 +6,8 @@ export type Lazy<T extends ObjectLiteral> = Promise<T> | T;
 @InterfaceType("Node")
 export abstract class BaseEntity {
     @Field(() => ID, { description: "A globally-unique identifier." })
-    @PrimaryGeneratedColumn({ name: "id" })
-    readonly id!: number;
+    @PrimaryGeneratedColumn("uuid", { name: "id" })
+    readonly id!: string;
 
     @CreateDateColumn({ name: "created_date" })
     @Field(() => Date, {

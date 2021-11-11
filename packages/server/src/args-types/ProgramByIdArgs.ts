@@ -6,5 +6,5 @@ import { IsEntityFound } from "../validators/entity";
 export class ProgramByIdArgs {
     @Field(() => ID, { description: "Specifies the ID of the program to return." })
     @IsEntityFound(Program)
-    id!: number;
+    id!: string;
 }

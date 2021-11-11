@@ -2,16 +2,14 @@ import { ExpressContext } from "apollo-server-express";
 
 export interface Context {
     req: Express.Request & any;
-    userId?: number;
+    userId?: string;
 }
 
 export function getContextFromRequest(ctx: ExpressContext): Context {
-    const jwtIdStr: string = (<any>ctx.req.jwtDecoded)?.id;
-    let jwtId: number | undefined = parseInt(jwtIdStr);
-    if (isNaN(jwtId)) jwtId = undefined;
+    const userId: string = (<any>ctx.req.jwtDecoded)?.id;
 
     return {
         req: ctx.req,
-        userId: jwtId
+        userId
     };
 }

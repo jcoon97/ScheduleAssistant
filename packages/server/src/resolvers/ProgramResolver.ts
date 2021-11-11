@@ -23,12 +23,12 @@ export class ProgramResolver {
         description: "Assigns a user to a program, if they are not already assigned."
     })
     async assignProgramUser(@Args() args: AssignUserProgramArgs): Promise<Program> {
-        const program: Program = (await this.programRepository.findOne({ id: parseInt(args.programId) }))!;
-        const user: User = (await this.userRepository.findOne({ id: parseInt(args.userId) }))!;
+        const program: Program = (await this.programRepository.findOne({ id: args.programId }))!;
+        const user: User = (await this.userRepository.findOne({ id: args.userId }))!;
         const programUsers: User[] = await program.users;
 
         // Check that user is not already present in program
-        if (programUsers.some((user: User) => user.id === parseInt(args.userId))) {
+        if (programUsers.some((user: User) => user.id === args.userId)) {
             throw new Error("User is already assigned to the specified program");
         }
 
@@ -42,8 +42,8 @@ export class ProgramResolver {
         description: "Changes the program's lead or manager to a different user."
     })
     async changeProgramLeadOrManager(@Args() args: ChangeProgramLeadManagerArgs): Promise<Program> {
-        const program: Program = (await this.programRepository.findOne({ id: parseInt(args.programId) }))!;
-        const user: User = (await this.userRepository.findOne({ id: parseInt(args.userId) }))!;
+        const program: Program = (await this.programRepository.findOne({ id: args.programId }))!;
+        const user: User = (await this.userRepository.findOne({ id: args.userId }))!;
         const programManager: User | undefined = await program.leadOrManager;
 
         // Check that specified user isn't already lead/manager of the program
