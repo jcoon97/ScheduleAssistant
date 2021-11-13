@@ -14,8 +14,8 @@ export function checkEntity<T extends ObjectLiteral>(defaultMessage: string): Va
             return defaultMessage;
         },
         async validate(value: any, args: ValidationArguments): Promise<boolean> {
-            if (!UUID_V4_PATTERN.test(value)) return false;
             const [ entityClass, entityPropertyName, invertResult ]: [ EntityTarget<T>, keyof T, boolean | undefined ] = <any>args.constraints;
+            if (entityPropertyName === "id" && !UUID_V4_PATTERN.test(value)) return false;
             const repository: Repository<T> = getRepository(entityClass);
             const entity: T | undefined = await repository.findOne({ [entityPropertyName]: value });
             return (invertResult ? entity === undefined : entity !== undefined);
@@ -28,7 +28,7 @@ export function IsEntityFound<T extends ObjectLiteral>(
     entityPropertyName?: keyof T,
     validationOptions?: ValidationOptions
 ): Function {
-    const defaultMessage: string = `Entity could not be found via property \`${ entityPropertyName }\``;
+    const defaultMessage: string = "Entity could not be found in the database";
 
     return function (object: Object, propertyName: string): void {
         registerDecorator({
@@ -47,8 +47,7 @@ export function IsEntityNotFound<T extends ObjectLiteral>(
     entityPropertyName?: keyof T,
     validationOptions?: ValidationOptions
 ): Function {
-    const defaultMessage: string = `Entity already exists via property ${ entityPropertyName }`;
-
+    const defaultMessage: string = "Entity already exists in the database";
 
     return function (object: Object, propertyName: string): void {
         registerDecorator({
