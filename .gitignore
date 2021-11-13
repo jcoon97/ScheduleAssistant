@@ -3,6 +3,7 @@
 
 # Build & Distributable directories
 build/
+coverage/
 dist/
 
 # Node Modules

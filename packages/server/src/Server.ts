@@ -9,7 +9,7 @@ import "reflect-metadata";
 import { useContainer as useContainerRoutingControllers, useExpressServer } from "routing-controllers";
 import { buildSchema } from "type-graphql";
 import { Service } from "typedi";
-import { createConnection, useContainer as useContainerTypeORM } from "typeorm";
+import { Connection, createConnection, useContainer as useContainerTypeORM } from "typeorm";
 import { Container } from "typeorm-typedi-extensions";
 import { AuthChecker } from "./AuthChecker";
 import { getContextFromRequest } from "./context";
@@ -35,37 +35,48 @@ export class Server {
         this.initServer();
     }
 
-    private async initConnection(): Promise<void> {
-        await createConnection({
-            name: "default",
+    static async buildSchema(emitSchema?: boolean): Promise<GraphQLSchema> {
+        return buildSchema({
+            authChecker: AuthChecker,
+            container: Container,
+            emitSchemaFile: emitSchema ?? true,
+            resolvers: [ ProgramResolver, UserResolver ]
+        });
+    }
+
+    static getEnvironment(): string {
+        const allowedEnvironments: string[] = [ "development", "production", "test" ];
+
+        return allowedEnvironments.includes(<string>process.env.NODE_ENV)
+            ? <string>process.env.NODE_ENV
+            : "development";
+    }
+
+    static async initConnection(dropSchema?: boolean): Promise<Connection> {
+        return createConnection({
             type: "postgres",
 
-            host: <string>process.env.DB_HOST,
-            username: <string>process.env.DB_USERNAME,
-            password: <string>process.env.DB_PASSWORD,
-            database: <string>process.env.DB_DATABASE,
+            host: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_HOST`],
+            port: parseInt(<string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_PORT`]),
+            username: process.env[`DB_${ Server.getEnvironment().toUpperCase() }_USERNAME`],
+            password: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_PASSWORD`],
+            database: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_DATABASE`],
 
+            dropSchema: dropSchema,
             entities: [ Program, User ],
-            logging: true,
+            logging: process.env.NODE_ENV === "development",
             synchronize: process.env.NODE_ENV !== "production"
         });
-        getLogger().info("Successfully established connection to database server");
     }
 
     private async initServer(): Promise<void> {
         // Attempt to connect to database first
-        await this.initConnection();
+        await Server.initConnection();
+        getLogger().info("Successfully established connection to database server");
 
         const app: Express = express();
         const httpServer: HTTPServer = http.createServer(app);
-
-        // Create GraphQL schema from TypeGraphQL
-        const schema: GraphQLSchema = await buildSchema({
-            authChecker: AuthChecker,
-            container: Container,
-            emitSchemaFile: true,
-            resolvers: [ ProgramResolver, UserResolver ]
-        });
+        const schema: GraphQLSchema = await Server.buildSchema(true);
 
         // Create ApolloServer instance
         const apolloServer: ApolloServer = new ApolloServer({
