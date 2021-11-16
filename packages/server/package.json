@@ -34,14 +34,14 @@
     "tslog": "^3.2.2",
     "type-graphql": "^1.2.0-rc.1",
     "typedi": "^0.10.0",
-    "typeorm": "^0.2.39",
+    "typeorm": "^0.2.40",
     "typeorm-typedi-extensions": "^0.4.1"
   },
   "devDependencies": {
     "@types/express-jwt": "^6.0.2",
     "@types/faker": "^5.5.9",
     "@types/jest": "^27.0.2",
-    "@types/jsonwebtoken": "^8.5.5",
+    "@types/jsonwebtoken": "^8.5.6",
     "@types/node": "^16.11.7",
     "cross-env": "^7.0.3",
     "faker": "^5.5.3",
