@@ -26,6 +26,6 @@ export class Program extends BaseEntity {
         description: "Array of users that have been assigned to the program.",
         nullable: true
     })
-    @OneToMany(() => User, user => user.program, { lazy: true })
+    @OneToMany(() => User, user => user.program, { lazy: true, onDelete: "CASCADE" })
     users!: Lazy<User[]>;
 }

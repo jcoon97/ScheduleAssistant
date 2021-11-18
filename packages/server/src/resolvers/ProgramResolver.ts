@@ -5,6 +5,7 @@ import { ChangeProgramLeadManagerArgs } from "../args-types/ChangeProgramLeadMan
 import { ProgramByIdArgs } from "../args-types/ProgramByIdArgs";
 import { Program } from "../entities/Program";
 import { RoleType, User } from "../entities/User";
+import { APIError, ErrorCode } from "../errors/APIError";
 import { CreateProgramInput } from "../input-types/CreateProgramInput";
 import { ProgramRepository } from "../repositories/ProgramRepository";
 import { UserRepository } from "../repositories/UserRepository";
@@ -29,7 +30,7 @@ export class ProgramResolver {
 
         // Check that user is not already present in program
         if (programUsers.some((user: User) => user.id === args.userId)) {
-            throw new Error("User is already assigned to the specified program");
+            throw new APIError(ErrorCode.PROGRAM_USER_ALREADY_ASSIGNED, "User is already assigned to the program");
         }
 
         programUsers.push(user);
@@ -48,7 +49,7 @@ export class ProgramResolver {
 
         // Check that specified user isn't already lead/manager of the program
         if (programManager?.id === user.id) {
-            throw new Error("User is already the specified program lead or manager");
+            throw new APIError(ErrorCode.PROGRAM_USER_ALREADY_MANAGER, "User is already assigned as program lead or manager");
         }
 
         program.leadOrManager = user;

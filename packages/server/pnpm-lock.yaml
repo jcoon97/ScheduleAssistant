@@ -3,7 +3,6 @@ lockfileVersion: 5.3
 specifiers:
   '@slack/webhook': ^6.0.0
   '@types/express-jwt': ^6.0.2
-  '@types/faker': ^5.5.9
   '@types/jest': ^27.0.2
   '@types/jsonwebtoken': ^8.5.6
   '@types/node': ^16.11.7
@@ -17,7 +16,6 @@ specifiers:
   dotenv: ^10.0.0
   express: ^4.17.1
   express-jwt: ^6.1.0
-  faker: ^5.5.3
   gaxios: ^4.3.2
   googleapis: ^89.0.0
   graphql: 15.7.2
@@ -61,12 +59,10 @@ dependencies:
 
 devDependencies:
   '@types/express-jwt': 6.0.2
-  '@types/faker': 5.5.9
   '@types/jest': 27.0.2
   '@types/jsonwebtoken': 8.5.6
   '@types/node': 16.11.7
   cross-env: 7.0.3
-  faker: 5.5.3
   gaxios: 4.3.2
   jest: 27.3.1
   rimraf: 3.0.2
@@ -874,10 +870,6 @@ packages:
       '@types/express-serve-static-core': 4.17.25
       '@types/qs': 6.9.7
       '@types/serve-static': 1.13.10
-
-  /@types/faker/5.5.9:
-    resolution: {integrity: sha512-uCx6mP3UY5SIO14XlspxsGjgaemrxpssJI0Ol+GfhxtcKpv9pgRZYsS4eeKeHVLje6Qtc8lGszuBI461+gVZBA==}
-    dev: true
 
   /@types/glob/7.2.0:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
@@ -2008,10 +2000,6 @@ packages:
 
   /extend/3.0.2:
     resolution: {integrity: sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==}
-
-  /faker/5.5.3:
-    resolution: {integrity: sha512-wLTv2a28wjUyWkbnX7u/ABZBkUkIF2fCd73V6P2oFqEGEktDfzWx4UxrSqtPRw0xPRAcjeAOIiJWqZm3pP4u3g==}
-    dev: true
 
   /fast-json-stable-stringify/2.1.0:
     resolution: {integrity: sha512-lhd/wF+Lk98HZoTCtlVraHtfh5XYijIjalXck7saUtuanSDyLMxnHhSXEDJqHxD7msR8D0uCmqlkwjCV8xvwHw==}

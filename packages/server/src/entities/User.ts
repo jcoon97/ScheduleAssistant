@@ -41,7 +41,11 @@ export class User extends BaseEntity {
         description: "The program the user is assigned to, if any.",
         nullable: true
     })
-    @ManyToOne(() => Program, program => program.users, { lazy: true, nullable: true })
+    @ManyToOne(() => Program, program => program.users, {
+        lazy: true,
+        nullable: true,
+        onDelete: "CASCADE"
+    })
     @JoinColumn({ name: "program_id" })
     program?: Lazy<Program>;
 }
