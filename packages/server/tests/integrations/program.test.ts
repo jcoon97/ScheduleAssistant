@@ -11,8 +11,8 @@ import {
     FakeUserProperties,
     generateFakeProgram,
     generateFakeUser
-} from "../helpers/generators";
-import { gqlTest, GraphQLTestOptions } from "../helpers/graphql";
+} from "../utils/generators";
+import { gqlTest, GraphQLTestOptions } from "../utils/graphql";
 
 const MUTATION_ASSIGN_USER_TO_PROGRAM = (
     userId: string,
@@ -28,6 +28,28 @@ const MUTATION_ASSIGN_USER_TO_PROGRAM = (
         mutation assignProgramUser($programId: ID!, $userId: ID!) {
             programAssignUser(programId: $programId, userId: $userId) {
                 users {
+                    emailAddress
+                }
+            }
+        }
+    `,
+    variables
+});
+
+const MUTATION_CHANGE_PROGRAM_LEAD_OR_MANAGER = (
+    userId: string,
+    variables: {
+        programId: string,
+        userId: string
+    }
+): GraphQLTestOptions => ({
+    context: {
+        userId
+    },
+    source: `
+        mutation changeProgramLeadOrManager($programId: ID!, $userId: ID!) {
+            programChangeLeadOrManager(programId: $programId, userId: $userId) {
+                leadOrManager {
                     emailAddress
                 }
             }
@@ -132,8 +154,34 @@ describe("Program GQL Tests", () => {
         expect(apiError.code).toEqual(ErrorCode.PROGRAM_USER_ALREADY_ASSIGNED);
     });
 
-    it.todo("should assign user as lead/manager of program");
-    it.todo("should throw error if user is already assigned as lead/manager of program");
+    it("should assign user as lead/manager of program", async () => {
+        const result: ExecutionResult = await gqlTest(MUTATION_CHANGE_PROGRAM_LEAD_OR_MANAGER(fakeAdmin.id, {
+            programId: fakeProgram.id,
+            userId: fakeAdmin.id
+        }));
+        expect(result.data).toBeDefined();
+        expect(result.errors).toBeUndefined();
+        expect(result.data).toEqual({
+            programChangeLeadOrManager: {
+                leadOrManager: {
+                    emailAddress: fakeAdmin.emailAddress
+                }
+            }
+        });
+    });
+
+    it("should throw error if user is already assigned as lead/manager of program", async () => {
+        const result: ExecutionResult = await gqlTest(MUTATION_CHANGE_PROGRAM_LEAD_OR_MANAGER(fakeAdmin.id, {
+            programId: fakeProgram.id,
+            userId: fakeAdmin.id
+        }));
+        expect(result.data).toBeNull();
+        expect(result.errors).toHaveLength(1);
+
+        const apiError: APIError = result.errors![0].originalError! as APIError;
+        expect(apiError).toBeInstanceOf(APIError);
+        expect(apiError.code).toEqual(ErrorCode.PROGRAM_USER_ALREADY_LEAD_MANAGER);
+    });
 
     afterAll(async () => {
         await connection.close();

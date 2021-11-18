@@ -49,7 +49,7 @@ export class ProgramResolver {
 
         // Check that specified user isn't already lead/manager of the program
         if (programManager?.id === user.id) {
-            throw new APIError(ErrorCode.PROGRAM_USER_ALREADY_MANAGER, "User is already assigned as program lead or manager");
+            throw new APIError(ErrorCode.PROGRAM_USER_ALREADY_LEAD_MANAGER, "User is already assigned as program lead or manager");
         }
 
         program.leadOrManager = user;

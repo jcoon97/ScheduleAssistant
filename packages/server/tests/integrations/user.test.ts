@@ -3,8 +3,8 @@ import { ForbiddenError } from "type-graphql";
 import { Connection } from "typeorm";
 import { User } from "../../src/entities/User";
 import { Server } from "../../src/Server";
-import { FAKES, FakeUserProperties, generateFakeUser } from "../helpers/generators";
-import { gqlTest, GraphQLTestOptions } from "../helpers/graphql";
+import { FAKES, FakeUserProperties, generateFakeUser } from "../utils/generators";
+import { gqlTest, GraphQLTestOptions } from "../utils/graphql";
 
 const QUERY_ME = (userId?: string): GraphQLTestOptions => ({
     context: {
