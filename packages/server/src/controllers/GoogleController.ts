@@ -10,7 +10,7 @@ import { UserRepository } from "../repositories/UserRepository";
 import { getUserInfo } from "../utils/google";
 import { generateToken } from "../utils/jwt";
 
-require("dotenv").config()
+require("dotenv").config();
 
 interface AuthResponse {
     url: string;
@@ -58,15 +58,18 @@ export class GoogleController {
             }).userinfo;
 
             const resUser: oauth2_v2.Schema$Userinfo = await getUserInfo(userInfo);
+            const userRole: RoleType = process.env.NODE_ENV === "production"
+                ? RoleType.DEFAULT
+                : RoleType.ADMIN;
 
-            const retUser: User = await this.userRepository.findOneOrCreate({
+            const retUser: User = await this.userRepository.findOneOrUpsert({
                 googleId: resUser.id!
             }, {
                 firstName: resUser.given_name ?? undefined,
                 lastName: resUser.family_name ?? undefined,
                 emailAddress: resUser.email!,
                 googleId: resUser.id!,
-                roleType: RoleType.ADMIN // TODO: Please, don't include this line in production
+                roleType: userRole
             });
 
             // Generate a JWT token for the user and return it to the client
