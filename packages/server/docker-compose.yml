@@ -12,7 +12,7 @@ services:
     restart: always
   web:
     build: .
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; pnpm run start:dev'
+    command: "pnpm run start:dev"
     depends_on:
       - db
     ports:

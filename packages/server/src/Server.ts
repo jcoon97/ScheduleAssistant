@@ -52,26 +52,34 @@ export class Server {
             : "development";
     }
 
-    static async initConnection(dropSchema?: boolean): Promise<Connection> {
-        return createConnection({
-            type: "postgres",
+    static async initConnection(dropSchema?: boolean, retries?: number): Promise<Connection> {
+        try {
+            return await createConnection({
+                type: "postgres",
 
-            host: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_HOST`],
-            port: parseInt(<string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_PORT`]),
-            username: process.env[`DB_${ Server.getEnvironment().toUpperCase() }_USERNAME`],
-            password: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_PASSWORD`],
-            database: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_DATABASE`],
+                host: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_HOST`],
+                port: parseInt(<string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_PORT`]),
+                username: process.env[`DB_${ Server.getEnvironment().toUpperCase() }_USERNAME`],
+                password: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_PASSWORD`],
+                database: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_DATABASE`],
 
-            dropSchema: dropSchema,
-            entities: [ Program, User ],
-            logging: process.env.NODE_ENV === "development",
-            synchronize: process.env.NODE_ENV !== "production"
-        });
+                dropSchema: dropSchema,
+                entities: [ Program, User ],
+                logging: process.env.NODE_ENV === "development",
+                synchronize: process.env.NODE_ENV !== "production"
+            });
+        } catch (err) {
+            if (retries && retries > 0) {
+                getLogger().error(`Server#initConnection() failed to establish connection, retrying ${ retries } more times...`);
+                return Server.initConnection(dropSchema, retries - 1);
+            } else {
+                throw err;
+            }
+        }
     }
 
     private async initServer(): Promise<void> {
-        // Attempt to connect to database first
-        await Server.initConnection();
+        await Server.initConnection(undefined, 3); // Try to connect up to 3 times before erroring out
         getLogger().info("Successfully established connection to database server");
 
         const app: Express = express();
