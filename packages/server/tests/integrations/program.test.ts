@@ -80,19 +80,19 @@ const MUTATION_CREATE_PROGRAM = (userId: string): GraphQLTestOptions => ({
 
 describe("Program GQL Tests", () => {
     let connection: Connection;
-    let fakeAdmin: User;
-    let fakeDefaultUser: User;
+    let fakeUserManager: User;
+    let fakeUserDefault: User;
     let fakeProgram: Program;
 
     beforeAll(async () => {
         connection = await Server.initConnection(true);
-        fakeAdmin = await generateFakeUser(connection, FAKES.USER_ADMINISTRATOR as FakeUserProperties);
-        fakeDefaultUser = await generateFakeUser(connection, FAKES.USER_DEFAULT as FakeUserProperties);
+        fakeUserManager = await generateFakeUser(connection, FAKES.USER_LA_MANAGER as FakeUserProperties);
+        fakeUserDefault = await generateFakeUser(connection, FAKES.USER_DEFAULT as FakeUserProperties);
         fakeProgram = await generateFakeProgram(connection, FAKES.PROGRAM as FakeProgramProperties);
     });
 
     it("should create new program", async () => {
-        const result: ExecutionResult = await gqlTest(MUTATION_CREATE_PROGRAM(fakeAdmin.id));
+        const result: ExecutionResult = await gqlTest(MUTATION_CREATE_PROGRAM(fakeUserManager.id));
         expect(result.data).toBeDefined();
         expect(result.errors).toBeUndefined();
         expect(result.data).toEqual({
@@ -104,7 +104,7 @@ describe("Program GQL Tests", () => {
     });
 
     it("should throw error if user is not administrator", async () => {
-        const result: ExecutionResult = await gqlTest(MUTATION_CREATE_PROGRAM(fakeDefaultUser.id));
+        const result: ExecutionResult = await gqlTest(MUTATION_CREATE_PROGRAM(fakeUserDefault.id));
         expect(result.data).toBeNull();
         expect(result.errors).toHaveLength(1);
 
@@ -114,7 +114,7 @@ describe("Program GQL Tests", () => {
     });
 
     it("should throw error if program already exists by abbreviation and/or name", async () => {
-        const result: ExecutionResult = await gqlTest(MUTATION_CREATE_PROGRAM(fakeAdmin.id));
+        const result: ExecutionResult = await gqlTest(MUTATION_CREATE_PROGRAM(fakeUserManager.id));
         expect(result.data).toBeNull();
         expect(result.errors).toHaveLength(1);
 
@@ -126,25 +126,25 @@ describe("Program GQL Tests", () => {
     });
 
     it("should assign user to program", async () => {
-        const result: ExecutionResult = await gqlTest(MUTATION_ASSIGN_USER_TO_PROGRAM(fakeAdmin.id, {
+        const result: ExecutionResult = await gqlTest(MUTATION_ASSIGN_USER_TO_PROGRAM(fakeUserManager.id, {
             programId: fakeProgram.id,
-            userId: fakeDefaultUser.id
+            userId: fakeUserDefault.id
         }));
         expect(result.data).toBeDefined();
         expect(result.errors).toBeUndefined();
         expect(result.data).toEqual({
             programAssignUser: {
                 users: [
-                    { emailAddress: fakeDefaultUser.emailAddress }
+                    { emailAddress: fakeUserDefault.emailAddress }
                 ]
             }
         });
     });
 
     it("should throw error if user is already assigned to program", async () => {
-        const result: ExecutionResult = await gqlTest(MUTATION_ASSIGN_USER_TO_PROGRAM(fakeAdmin.id, {
+        const result: ExecutionResult = await gqlTest(MUTATION_ASSIGN_USER_TO_PROGRAM(fakeUserManager.id, {
             programId: fakeProgram.id,
-            userId: fakeDefaultUser.id
+            userId: fakeUserDefault.id
         }));
         expect(result.data).toBeNull();
         expect(result.errors).toHaveLength(1);
@@ -155,25 +155,25 @@ describe("Program GQL Tests", () => {
     });
 
     it("should assign user as lead/manager of program", async () => {
-        const result: ExecutionResult = await gqlTest(MUTATION_CHANGE_PROGRAM_LEAD_OR_MANAGER(fakeAdmin.id, {
+        const result: ExecutionResult = await gqlTest(MUTATION_CHANGE_PROGRAM_LEAD_OR_MANAGER(fakeUserManager.id, {
             programId: fakeProgram.id,
-            userId: fakeAdmin.id
+            userId: fakeUserManager.id
         }));
         expect(result.data).toBeDefined();
         expect(result.errors).toBeUndefined();
         expect(result.data).toEqual({
             programChangeLeadOrManager: {
                 leadOrManager: {
-                    emailAddress: fakeAdmin.emailAddress
+                    emailAddress: fakeUserManager.emailAddress
                 }
             }
         });
     });
 
     it("should throw error if user is already assigned as lead/manager of program", async () => {
-        const result: ExecutionResult = await gqlTest(MUTATION_CHANGE_PROGRAM_LEAD_OR_MANAGER(fakeAdmin.id, {
+        const result: ExecutionResult = await gqlTest(MUTATION_CHANGE_PROGRAM_LEAD_OR_MANAGER(fakeUserManager.id, {
             programId: fakeProgram.id,
-            userId: fakeAdmin.id
+            userId: fakeUserManager.id
         }));
         expect(result.data).toBeNull();
         expect(result.errors).toHaveLength(1);

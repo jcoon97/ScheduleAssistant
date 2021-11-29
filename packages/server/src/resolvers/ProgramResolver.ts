@@ -18,7 +18,7 @@ export class ProgramResolver {
     @InjectRepository(User)
     private readonly userRepository!: UserRepository;
 
-    @Authorized(RoleType.ADMIN)
+    @Authorized(RoleType.LEAD_LA)
     @Mutation(() => Program, {
         name: "programAssignUser",
         description: "Assigns a user to a program, if they are not already assigned."
@@ -37,7 +37,7 @@ export class ProgramResolver {
         return this.programRepository.save(program);
     }
 
-    @Authorized(RoleType.ADMIN)
+    @Authorized(RoleType.LA_MANAGER)
     @Mutation(() => Program, {
         name: "programChangeLeadOrManager",
         description: "Changes the program's lead or manager to a different user."
@@ -56,7 +56,7 @@ export class ProgramResolver {
         return this.programRepository.save(program);
     }
 
-    @Authorized(RoleType.ADMIN)
+    @Authorized(RoleType.LA_MANAGER)
     @Mutation(() => Program, {
         name: "programCreate",
         description: "Creates a new program."

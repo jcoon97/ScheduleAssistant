@@ -3,31 +3,38 @@ import { Program } from "../../src/entities/Program";
 import { RoleType, User } from "../../src/entities/User";
 
 export const FAKES: FakeData = {
-    USER_ADMINISTRATOR: {
-        emailAddress: "fake.admin@example.com",
-        googleId: "882545233602",
-        roleType: RoleType.ADMIN
-    },
     USER_DEFAULT: {
+        type: "user",
         emailAddress: "fake.user@example.com",
         googleId: "461943365702",
         roleType: RoleType.DEFAULT
     },
+    USER_LA_MANAGER: {
+        type: "user",
+        emailAddress: "fake.manager@example.com",
+        googleId: "882545233602",
+        roleType: RoleType.LA_MANAGER
+    },
     PROGRAM: {
+        type: "program",
         abbreviation: "ABC",
         name: "A Fake Program"
     }
 };
 
-export type AllowedKeys = "USER_ADMINISTRATOR" | "USER_DEFAULT" | "PROGRAM";
+export type AllowedKeys = "USER_DEFAULT" | "USER_LA_MANAGER" | "PROGRAM";
 
 export type AllowedProperties = FakeProgramProperties | FakeUserProperties;
 
 export type FakeData = Record<AllowedKeys, AllowedProperties>;
 
-export type FakeProgramProperties = Required<Pick<Program, "abbreviation" | "name">>;
+export type FakeProgramProperties = Required<Pick<Program, "abbreviation" | "name">> & {
+    type: "program"
+};
 
-export type FakeUserProperties = Required<Pick<User, "emailAddress" | "googleId" | "roleType">>;
+export type FakeUserProperties = Required<Pick<User, "emailAddress" | "googleId" | "roleType">> & {
+    type: "user"
+};
 
 export async function generateFakeProgram(connection: Connection, program: FakeProgramProperties): Promise<Program> {
     const repository: Repository<Program> = connection.getRepository(Program);

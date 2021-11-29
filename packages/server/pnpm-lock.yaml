@@ -6,6 +6,7 @@ specifiers:
   '@types/jest': ^27.0.3
   '@types/jsonwebtoken': ^8.5.6
   '@types/node': ^16.11.10
+  '@types/validator': ^13.7.0
   apollo-server-core: ^3.5.0
   apollo-server-express: ^3.5.0
   axios: ^0.24.0
@@ -25,6 +26,7 @@ specifiers:
   reflect-metadata: ^0.1.13
   rimraf: ^3.0.2
   routing-controllers: ^0.9.0
+  ts-jenum: ^2.2.2
   ts-jest: ^27.0.7
   tsc-watch: ^4.5.0
   tslog: ^3.2.2
@@ -51,6 +53,7 @@ dependencies:
   pg: 8.7.1
   reflect-metadata: 0.1.13
   routing-controllers: 0.9.0_6235e4b020312c74de38af4210d0f1ad
+  ts-jenum: 2.2.2_typescript@4.5.2
   tslog: 3.2.2
   type-graphql: 1.2.0-rc.1_2178bf335ffb2e82598d161d5f6721bc
   typedi: 0.10.0
@@ -62,6 +65,7 @@ devDependencies:
   '@types/jest': 27.0.3
   '@types/jsonwebtoken': 8.5.6
   '@types/node': 16.11.10
+  '@types/validator': 13.7.0
   cross-env: 7.0.3
   gaxios: 4.3.2
   jest: 27.3.1
@@ -953,6 +957,10 @@ packages:
 
   /@types/stack-utils/2.0.1:
     resolution: {integrity: sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==}
+    dev: true
+
+  /@types/validator/13.7.0:
+    resolution: {integrity: sha512-+jBxVvXVuggZOrm04NR8z+5+bgoW4VZyLzUO+hmPPW1mVFL/HaitLAkizfv4yg9TbG8lkfHWVMQ11yDqrVVCzA==}
     dev: true
 
   /@types/yargs-parser/20.2.1:
@@ -4298,6 +4306,14 @@ packages:
     dependencies:
       punycode: 2.1.1
     dev: true
+
+  /ts-jenum/2.2.2_typescript@4.5.2:
+    resolution: {integrity: sha512-vykqLRRmbgyKOE/XgLPd9Vbm03LHF3IYqNZAVGDY0GiHazerKSdfXi41KYCP6vV3wHpm2sgLEnXwXHFGQtDhHw==}
+    peerDependencies:
+      typescript: '>= 2.2.2'
+    dependencies:
+      typescript: 4.5.2
+    dev: false
 
   /ts-jest/27.0.7_7e2a439bb7b53c38ff0c1a3c5e04c2c5:
     resolution: {integrity: sha512-O41shibMqzdafpuP+CkrOL7ykbmLh+FqQrXEmV9CydQ5JBk0Sj0uAEF5TNNe94fZWKm3yYvWa/IbyV4Yg1zK2Q==}

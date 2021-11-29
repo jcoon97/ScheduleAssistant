@@ -85,12 +85,17 @@ type Query {
     """Specifies the ID of the program to return."""
     id: ID!
   ): Program!
+
+  """Returns an array of user role types that can be used."""
+  userRoleTypes: [RoleType!]!
 }
 
-"""Possible authorization roles that can be assigned to a user."""
-enum RoleType {
-  ADMIN
-  DEFAULT
+type RoleType {
+  """The role's permission level, expressed as an integer."""
+  level: Int!
+
+  """The role's name, e.g. Learning Assistant."""
+  name: String!
 }
 
 type User implements Node {

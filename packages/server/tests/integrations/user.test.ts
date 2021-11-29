@@ -1,7 +1,7 @@
 import { ExecutionResult, GraphQLError } from "graphql";
 import { ForbiddenError } from "type-graphql";
 import { Connection } from "typeorm";
-import { User } from "../../src/entities/User";
+import { RoleType, User } from "../../src/entities/User";
 import { Server } from "../../src/Server";
 import { FAKES, FakeUserProperties, generateFakeUser } from "../utils/generators";
 import { gqlTest, GraphQLTestOptions } from "../utils/graphql";
@@ -15,7 +15,24 @@ const QUERY_ME = (userId?: string): GraphQLTestOptions => ({
             me {
                 emailAddress
                 googleId
-                roleType
+                roleType {
+                    level
+                    name
+                }
+            }
+        }
+    `
+});
+
+const QUERY_ROLE_TYPES = (userId?: string): GraphQLTestOptions => ({
+    context: {
+        userId
+    },
+    source: `
+        query {
+            userRoleTypes {
+                level
+                name
             }
         }
     `
@@ -23,23 +40,42 @@ const QUERY_ME = (userId?: string): GraphQLTestOptions => ({
 
 describe("User GQL Tests", () => {
     let connection: Connection;
-    let fakeAdmin: User;
+    let fakeUserManager: User;
 
     beforeAll(async () => {
         connection = await Server.initConnection(true);
-        fakeAdmin = await generateFakeUser(connection, FAKES.USER_ADMINISTRATOR as FakeUserProperties);
+        fakeUserManager = await generateFakeUser(connection, FAKES.USER_LA_MANAGER as FakeUserProperties);
     });
 
-    it("should return user data from `me` query", async () => {
-        const result: ExecutionResult = await gqlTest(QUERY_ME(fakeAdmin.id));
+    it("should return user data", async () => {
+        const result: ExecutionResult = await gqlTest(QUERY_ME(fakeUserManager.id));
         expect(result.data).toBeDefined();
         expect(result.errors).toBeUndefined();
         expect(result.data).toEqual({
             me: {
-                emailAddress: fakeAdmin.emailAddress,
-                googleId: fakeAdmin.googleId,
-                roleType: fakeAdmin.roleType
+                emailAddress: fakeUserManager.emailAddress,
+                googleId: fakeUserManager.googleId,
+                roleType: {
+                    level: fakeUserManager.roleType.level,
+                    name: fakeUserManager.roleType.name
+                }
             }
+        });
+    });
+
+    it("should return user role types", async () => {
+        const result: ExecutionResult = await gqlTest(QUERY_ROLE_TYPES(fakeUserManager.id));
+        const userRoles = RoleType.values().map((role: RoleType) => ({
+            level: role.level,
+            name: role.name
+        }));
+
+        expect(result.data).toBeDefined();
+        expect(result.errors).toBeUndefined();
+        expect(result.data).toEqual({
+            userRoleTypes: [
+                ...userRoles
+            ]
         });
     });
 

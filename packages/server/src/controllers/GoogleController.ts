@@ -58,6 +58,10 @@ export class GoogleController {
             }).userinfo;
 
             const resUser: oauth2_v2.Schema$Userinfo = await getUserInfo(userInfo);
+            const defaultRole: RoleType = process.env.NODE_ENV as string === "production"
+                ? RoleType.DEFAULT
+                : RoleType.LA_MANAGER;
+
             const retUser: User = await this.userRepository.findOneOrUpsert({
                 googleId: resUser.id!
             }, {
@@ -65,7 +69,7 @@ export class GoogleController {
                 lastName: resUser.family_name ?? undefined,
                 emailAddress: resUser.email!,
                 googleId: resUser.id!,
-                roleType: RoleType.DEFAULT
+                roleType: defaultRole
             });
 
             // Generate a JWT token for the user and return it to the client

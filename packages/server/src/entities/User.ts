@@ -1,11 +1,28 @@
-import { Field, ObjectType, registerEnumType } from "type-graphql";
+import { Enum, EnumType } from "ts-jenum";
+import { Field, Int, ObjectType } from "type-graphql";
 import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
 import { BaseEntity, Lazy } from "./BaseEntity";
 import { Program } from "./Program";
 
-export enum RoleType {
-    DEFAULT = "DEFAULT",
-    ADMIN = "ADMIN"
+@Enum<RoleType>("name")
+@ObjectType()
+export class RoleType extends EnumType<RoleType>() {
+    static readonly DEFAULT = new RoleType(1, "Learning Assistant");
+    static readonly SENIOR_LA = new RoleType(2, "Senior LA");
+    static readonly LEAD_LA = new RoleType(3, "Lead LA");
+    static readonly LA_MANAGER = new RoleType(4, "LA Manager");
+
+    @Field(() => Int, { description: "The role's permission level, expressed as an integer." })
+    readonly level: number;
+
+    @Field(() => String, { description: "The role's name, e.g. Learning Assistant." })
+    readonly name: string;
+
+    private constructor(level: number, name: string) {
+        super();
+        this.level = level;
+        this.name = name;
+    }
 }
 
 @Entity("users")
@@ -33,7 +50,16 @@ export class User extends BaseEntity {
     @Field(() => String, { description: "The user's Google ID" })
     googleId!: string;
 
-    @Column({ type: "enum", enum: RoleType, default: RoleType.DEFAULT, name: "role_type" })
+    @Column({
+        type: "enum",
+        default: RoleType.DEFAULT.enumName,
+        enum: RoleType.keys(),
+        name: "role_type",
+        transformer: {
+            from: (value: string): RoleType => RoleType.valueByName(value),
+            to: (value: RoleType): string => value.enumName
+        }
+    })
     @Field(() => RoleType, { description: "The user's current authorization level." })
     roleType!: RoleType;
 
@@ -49,8 +75,3 @@ export class User extends BaseEntity {
     @JoinColumn({ name: "program_id" })
     program?: Lazy<Program>;
 }
-
-registerEnumType(RoleType, {
-    description: "Possible authorization roles that can be assigned to a user.",
-    name: "RoleType"
-});
