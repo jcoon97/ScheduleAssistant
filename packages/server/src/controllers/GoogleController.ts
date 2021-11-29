@@ -58,10 +58,6 @@ export class GoogleController {
             }).userinfo;
 
             const resUser: oauth2_v2.Schema$Userinfo = await getUserInfo(userInfo);
-            const userRole: RoleType = process.env.NODE_ENV === "production"
-                ? RoleType.DEFAULT
-                : RoleType.ADMIN;
-
             const retUser: User = await this.userRepository.findOneOrUpsert({
                 googleId: resUser.id!
             }, {
@@ -69,7 +65,7 @@ export class GoogleController {
                 lastName: resUser.family_name ?? undefined,
                 emailAddress: resUser.email!,
                 googleId: resUser.id!,
-                roleType: userRole
+                roleType: RoleType.DEFAULT
             });
 
             // Generate a JWT token for the user and return it to the client
@@ -79,7 +75,7 @@ export class GoogleController {
             getLogger().error(err);
 
             if (err instanceof GaxiosError) {
-                if ((<GaxiosError>err).message === "invalid_grant") {
+                if ((err as GaxiosError).message === "invalid_grant") {
                     throw new InternalServerError("Invalid Grant. Token may have already been used. Re-generate an auth URL and try again.");
                 }
             }

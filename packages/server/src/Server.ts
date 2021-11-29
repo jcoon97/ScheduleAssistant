@@ -47,8 +47,8 @@ export class Server {
     static getEnvironment(): string {
         const allowedEnvironments: string[] = [ "development", "production", "test" ];
 
-        return allowedEnvironments.includes(<string>process.env.NODE_ENV)
-            ? <string>process.env.NODE_ENV
+        return allowedEnvironments.includes(process.env.NODE_ENV as string)
+            ? process.env.NODE_ENV as string
             : "development";
     }
 
@@ -57,11 +57,11 @@ export class Server {
             return await createConnection({
                 type: "postgres",
 
-                host: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_HOST`],
-                port: parseInt(<string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_PORT`]),
-                username: process.env[`DB_${ Server.getEnvironment().toUpperCase() }_USERNAME`],
-                password: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_PASSWORD`],
-                database: <string>process.env[`DB_${ Server.getEnvironment().toUpperCase() }_DATABASE`],
+                host: process.env[`DB_${ Server.getEnvironment().toUpperCase() }_HOST`] as string,
+                port: parseInt(process.env[`DB_${ Server.getEnvironment().toUpperCase() }_PORT`] as string),
+                username: process.env[`DB_${ Server.getEnvironment().toUpperCase() }_USERNAME`] as string,
+                password: process.env[`DB_${ Server.getEnvironment().toUpperCase() }_PASSWORD`] as string,
+                database: process.env[`DB_${ Server.getEnvironment().toUpperCase() }_DATABASE`] as string,
 
                 dropSchema: dropSchema,
                 entities: [ Program, User ],
@@ -98,7 +98,7 @@ export class Server {
             algorithms: [ "HS512" ],
             credentialsRequired: false,
             userProperty: "jwtDecoded", // Remap `req.user` to `req.jwtDecoded`
-            secret: <string>process.env.JWT_TOKEN_SECRET
+            secret: process.env.JWT_TOKEN_SECRET as string
         }));
 
         useExpressServer(app, {

@@ -3,7 +3,7 @@ import { User } from "../entities/User";
 
 require("dotenv").config();
 
-const secret: string = <string>process.env.JWT_TOKEN_SECRET;
+const secret: string = process.env.JWT_TOKEN_SECRET as string;
 
 export function generateToken(user: User): Promise<string> {
     return new Promise<string>((resolve, reject) => {

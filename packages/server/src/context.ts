@@ -6,7 +6,7 @@ export interface Context {
 }
 
 export function getContextFromRequest(ctx: ExpressContext): Context {
-    const userId: string = (<any>ctx.req.jwtDecoded)?.id;
+    const userId: string = (ctx.req.jwtDecoded as any)?.id;
 
     return {
         req: ctx.req,
