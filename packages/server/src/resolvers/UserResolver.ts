@@ -9,7 +9,7 @@ export class UserResolver {
     @InjectRepository(User)
     private readonly userRepository!: UserRepository;
 
-    @Authorized(RoleType.DEFAULT)
+    @Authorized(RoleType.LEARNING_ASSISTANT)
     @Query(() => User, {
         description: "Returns a User entity for who is currently authenticated via JWT token.",
         nullable: true

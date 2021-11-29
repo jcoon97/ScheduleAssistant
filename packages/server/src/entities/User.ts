@@ -7,10 +7,11 @@ import { Program } from "./Program";
 @Enum<RoleType>("name")
 @ObjectType()
 export class RoleType extends EnumType<RoleType>() {
-    static readonly DEFAULT = new RoleType(1, "Learning Assistant");
+    static readonly LEARNING_ASSISTANT = new RoleType(1, "Learning Assistant");
     static readonly SENIOR_LA = new RoleType(2, "Senior LA");
     static readonly LEAD_LA = new RoleType(3, "Lead LA");
     static readonly LA_MANAGER = new RoleType(4, "LA Manager");
+    static readonly ADMINISTRATOR = new RoleType(5, "Administrator");
 
     @Field(() => Int, { description: "The role's permission level, expressed as an integer." })
     readonly level: number;
@@ -23,6 +24,11 @@ export class RoleType extends EnumType<RoleType>() {
         this.level = level;
         this.name = name;
     }
+
+    static levels = (): number[] => RoleType.values().map((value: RoleType) => value.level);
+
+    static valueByLevel = (level: number): RoleType | undefined => RoleType.values()
+        .find((value: RoleType) => value.level === level);
 }
 
 @Entity("users")
@@ -52,12 +58,12 @@ export class User extends BaseEntity {
 
     @Column({
         type: "enum",
-        default: RoleType.DEFAULT.enumName,
-        enum: RoleType.keys(),
+        default: RoleType.LEARNING_ASSISTANT.level,
+        enum: RoleType.levels(),
         name: "role_type",
         transformer: {
-            from: (value: string): RoleType => RoleType.valueByName(value),
-            to: (value: RoleType): string => value.enumName
+            from: (value: number): RoleType | undefined => RoleType.valueByLevel(value),
+            to: (value: RoleType): number => value.level
         }
     })
     @Field(() => RoleType, { description: "The user's current authorization level." })

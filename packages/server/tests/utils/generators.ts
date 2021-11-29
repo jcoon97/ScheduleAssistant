@@ -7,7 +7,7 @@ export const FAKES: FakeData = {
         type: "user",
         emailAddress: "fake.user@example.com",
         googleId: "461943365702",
-        roleType: RoleType.DEFAULT
+        roleType: RoleType.LEARNING_ASSISTANT
     },
     USER_LA_MANAGER: {
         type: "user",

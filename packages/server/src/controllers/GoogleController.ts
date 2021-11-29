@@ -59,8 +59,8 @@ export class GoogleController {
 
             const resUser: oauth2_v2.Schema$Userinfo = await getUserInfo(userInfo);
             const defaultRole: RoleType = process.env.NODE_ENV as string === "production"
-                ? RoleType.DEFAULT
-                : RoleType.LA_MANAGER;
+                ? RoleType.LEARNING_ASSISTANT
+                : RoleType.ADMINISTRATOR;
 
             const retUser: User = await this.userRepository.findOneOrUpsert({
                 googleId: resUser.id!
