@@ -1,7 +1,7 @@
 import { ExecutionResult, GraphQLError } from "graphql";
 import { ForbiddenError } from "type-graphql";
 import { Connection } from "typeorm";
-import { RoleType, User } from "../../../src/entities/User";
+import { User } from "../../../src/entities/User";
 import { Server } from "../../../src/Server";
 import { FAKES, FakeUserProperties, generateFakeUser } from "../../utils/generators";
 import { gqlTest, GraphQLTestOptions } from "../../utils/graphql";
@@ -24,58 +24,28 @@ const QUERY_ME = (userId?: string): GraphQLTestOptions => ({
     `
 });
 
-const QUERY_ROLE_TYPES = (userId?: string): GraphQLTestOptions => ({
-    context: {
-        userId
-    },
-    source: `
-        query {
-            userRoleTypes {
-                level
-                name
-            }
-        }
-    `
-});
-
 describe("User GQL Tests", () => {
     let connection: Connection;
-    let fakeUserManager: User;
+    let fakeUserDefault: User;
 
     beforeAll(async () => {
         connection = await Server.initConnection(true);
-        fakeUserManager = await generateFakeUser(connection, FAKES.USER_LA_MANAGER as FakeUserProperties);
+        fakeUserDefault = await generateFakeUser(connection, FAKES.USER_DEFAULT as FakeUserProperties);
     });
 
     it("should return user data", async () => {
-        const result: ExecutionResult = await gqlTest(QUERY_ME(fakeUserManager.id));
+        const result: ExecutionResult = await gqlTest(QUERY_ME(fakeUserDefault.id));
         expect(result.data).toBeDefined();
         expect(result.errors).toBeUndefined();
         expect(result.data).toEqual({
             me: {
-                emailAddress: fakeUserManager.emailAddress,
-                googleId: fakeUserManager.googleId,
+                emailAddress: fakeUserDefault.emailAddress,
+                googleId: fakeUserDefault.googleId,
                 roleType: {
-                    level: fakeUserManager.roleType.level,
-                    name: fakeUserManager.roleType.name
+                    level: fakeUserDefault.roleType.level,
+                    name: fakeUserDefault.roleType.name
                 }
             }
-        });
-    });
-
-    it("should return user role types", async () => {
-        const result: ExecutionResult = await gqlTest(QUERY_ROLE_TYPES(fakeUserManager.id));
-        const userRoles = RoleType.values().map((role: RoleType) => ({
-            level: role.level,
-            name: role.name
-        }));
-
-        expect(result.data).toBeDefined();
-        expect(result.errors).toBeUndefined();
-        expect(result.data).toEqual({
-            userRoleTypes: [
-                ...userRoles
-            ]
         });
     });
 
