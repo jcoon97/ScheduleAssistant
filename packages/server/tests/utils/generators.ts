@@ -9,6 +9,18 @@ export const FAKES: FakeData = {
         googleId: "461943365702",
         roleType: RoleType.LEARNING_ASSISTANT
     },
+    USER_SENIOR_LA: {
+        type: "user",
+        emailAddress: "fake.senior@example.com",
+        googleId: "541691690842",
+        roleType: RoleType.SENIOR_LA
+    },
+    USER_LEAD_LA: {
+        type: "user",
+        emailAddress: "fake.lead@example.com",
+        googleId: "289991373768",
+        roleType: RoleType.LEAD_LA
+    },
     USER_LA_MANAGER: {
         type: "user",
         emailAddress: "fake.manager@example.com",
@@ -22,7 +34,7 @@ export const FAKES: FakeData = {
     }
 };
 
-export type AllowedKeys = "USER_DEFAULT" | "USER_LA_MANAGER" | "PROGRAM";
+export type AllowedKeys = "USER_DEFAULT" | "USER_SENIOR_LA" | "USER_LEAD_LA" | "USER_LA_MANAGER" | "PROGRAM";
 
 export type AllowedProperties = FakeProgramProperties | FakeUserProperties;
 

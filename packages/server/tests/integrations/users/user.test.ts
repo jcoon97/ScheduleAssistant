@@ -1,10 +1,10 @@
 import { ExecutionResult, GraphQLError } from "graphql";
 import { ForbiddenError } from "type-graphql";
 import { Connection } from "typeorm";
-import { RoleType, User } from "../../src/entities/User";
-import { Server } from "../../src/Server";
-import { FAKES, FakeUserProperties, generateFakeUser } from "../utils/generators";
-import { gqlTest, GraphQLTestOptions } from "../utils/graphql";
+import { RoleType, User } from "../../../src/entities/User";
+import { Server } from "../../../src/Server";
+import { FAKES, FakeUserProperties, generateFakeUser } from "../../utils/generators";
+import { gqlTest, GraphQLTestOptions } from "../../utils/graphql";
 
 const QUERY_ME = (userId?: string): GraphQLTestOptions => ({
     context: {

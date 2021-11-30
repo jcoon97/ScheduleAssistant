@@ -38,6 +38,15 @@ type Mutation {
 
   """Creates a new program."""
   programCreate(input: CreateProgramInput!): Program!
+
+  """Elevates a user's role type to the specified level."""
+  userElevateRole(
+    """Specifies the level to set the user to."""
+    level: Int!
+
+    """Specifies the user whose permission will get elevated."""
+    userId: ID!
+  ): User!
 }
 
 interface Node {
