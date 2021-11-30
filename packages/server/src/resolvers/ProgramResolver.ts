@@ -1,7 +1,6 @@
 import { Arg, Args, Authorized, Mutation, Query, Resolver } from "type-graphql";
 import { InjectRepository } from "typeorm-typedi-extensions";
 import { AssignUserProgramArgs } from "../args-types/AssignUserProgramArgs";
-import { ChangeProgramLeadManagerArgs } from "../args-types/ChangeProgramLeadManagerArgs";
 import { ProgramByIdArgs } from "../args-types/ProgramByIdArgs";
 import { Program } from "../entities/Program";
 import { RoleType, User } from "../entities/User";
@@ -34,25 +33,6 @@ export class ProgramResolver {
         }
 
         programUsers.push(user);
-        return this.programRepository.save(program);
-    }
-
-    @Authorized(RoleType.LA_MANAGER)
-    @Mutation(() => Program, {
-        name: "programChangeLeadOrManager",
-        description: "Changes the program's lead or manager to a different user."
-    })
-    async changeProgramLeadOrManager(@Args() args: ChangeProgramLeadManagerArgs): Promise<Program> {
-        const program: Program = (await this.programRepository.findOne({ id: args.programId }))!;
-        const user: User = (await this.userRepository.findOne({ id: args.userId }))!;
-        const programManager: User | undefined = await program.leadOrManager;
-
-        // Check that specified user isn't already lead/manager of the program
-        if (programManager?.id === user.id) {
-            throw new APIError(ErrorCode.PROGRAM_USER_ALREADY_LEAD_MANAGER, "User is already assigned as program lead or manager");
-        }
-
-        program.leadOrManager = user;
         return this.programRepository.save(program);
     }
 

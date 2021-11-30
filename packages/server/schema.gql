@@ -27,15 +27,6 @@ type Mutation {
     userId: ID!
   ): Program!
 
-  """Changes the program's lead or manager to a different user."""
-  programChangeLeadOrManager(
-    """Specifies the program that the user will be made lead/manager of."""
-    programId: ID!
-
-    """Specifies the user that will be made lead/manager."""
-    userId: ID!
-  ): Program!
-
   """Creates a new program."""
   programCreate(input: CreateProgramInput!): Program!
 
@@ -69,9 +60,6 @@ type Program implements Node {
 
   """A globally-unique identifier."""
   id: ID!
-
-  """The program's lead or manager, if one has been assigned."""
-  leadOrManager: User
 
   """The program's name, e.g. Full Stack Flex."""
   name: String!
