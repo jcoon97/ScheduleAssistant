@@ -52,9 +52,9 @@ export class User extends BaseEntity {
     @Field(() => String, { description: "The user's email address, fetched from Google." })
     emailAddress!: string;
 
-    @Column({ name: "google_id" })
-    @Field(() => String, { description: "The user's Google ID" })
-    googleId!: string;
+    @Column({ name: "google_id", nullable: true })
+    @Field(() => String, { description: "The user's Google ID", nullable: true })
+    googleId?: string;
 
     @Column({
         type: "enum",

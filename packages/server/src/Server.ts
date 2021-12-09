@@ -16,9 +16,9 @@ import { getContextFromRequest } from "./context";
 import { GoogleController } from "./controllers/GoogleController";
 import { Program } from "./entities/Program";
 import { User } from "./entities/User";
+import { UserResolver } from "./graphql/resolvers/UserResolver";
 import { getLogger } from "./logger";
-import { ProgramResolver } from "./resolvers/ProgramResolver";
-import { UserResolver } from "./resolvers/UserResolver";
+import { ProgramResolver } from "./graphql/resolvers/ProgramResolver";
 
 dotenv.config();
 useContainerTypeORM(Container);

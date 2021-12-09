@@ -1,6 +1,6 @@
 import { ArgsType, Field, ID } from "type-graphql";
-import { Program } from "../entities/Program";
-import { IsEntityFound } from "../validators/entity";
+import { Program } from "../../entities/Program";
+import { IsEntityFound } from "../../validators/entity";
 
 @ArgsType()
 export class ProgramByIdArgs {

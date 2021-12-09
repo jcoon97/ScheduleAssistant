@@ -1,6 +1,6 @@
 import { Field, InputType } from "type-graphql";
-import { Program } from "../entities/Program";
-import { IsEntityNotFound } from "../validators/entity";
+import { Program } from "../../entities/Program";
+import { IsEntityNotFound } from "../../validators/entity";
 
 @InputType("CreateProgramInput", { description: "Specifies the fields for creating a new program." })
 export class CreateProgramInput implements Partial<Program> {

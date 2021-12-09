@@ -3,8 +3,9 @@ import { ArgumentValidationError, ForbiddenError } from "type-graphql";
 import { Connection } from "typeorm";
 import { Program } from "../../src/entities/Program";
 import { User } from "../../src/entities/User";
-import { APIError, ErrorCode } from "../../src/errors/APIError";
+import { UserError } from "../../src/graphql/errors/UserError";
 import { Server } from "../../src/Server";
+import { errorContainsField } from "../utils/error";
 import {
     FakeProgramProperties,
     FAKES,
@@ -27,8 +28,14 @@ const MUTATION_ASSIGN_USER_TO_PROGRAM = (
     source: `
         mutation assignProgramUser($programId: ID!, $userId: ID!) {
             programAssignUser(programId: $programId, userId: $userId) {
-                users {
-                    emailAddress
+                program {
+                    users {
+                        emailAddress
+                    }    
+                }
+                userErrors {
+                    field
+                    message
                 }
             }
         }
@@ -43,8 +50,14 @@ const MUTATION_CREATE_PROGRAM = (userId: string): GraphQLTestOptions => ({
     source: `
         mutation createProgram($input: CreateProgramInput!) {
             programCreate(input: $input) {
-                abbreviation
-                name
+                program {
+                    abbreviation
+                    name
+                }
+                userErrors {
+                    field
+                    message
+                }
             }
         }
     `,
@@ -75,8 +88,11 @@ describe("Program GQL Tests", () => {
         expect(result.errors).toBeUndefined();
         expect(result.data).toEqual({
             programCreate: {
-                abbreviation: "FSF",
-                name: "Full Stack Flex"
+                program: {
+                    abbreviation: "FSF",
+                    name: "Full Stack Flex"
+                },
+                userErrors: []
             }
         });
     });
@@ -112,9 +128,12 @@ describe("Program GQL Tests", () => {
         expect(result.errors).toBeUndefined();
         expect(result.data).toEqual({
             programAssignUser: {
-                users: [
-                    { emailAddress: fakeUserDefault.emailAddress }
-                ]
+                program: {
+                    users: [
+                        { emailAddress: fakeUserDefault.emailAddress }
+                    ]
+                },
+                userErrors: []
             }
         });
     });
@@ -124,12 +143,14 @@ describe("Program GQL Tests", () => {
             programId: fakeProgram.id,
             userId: fakeUserDefault.id
         }));
-        expect(result.data).toBeNull();
-        expect(result.errors).toHaveLength(1);
+        expect(result.data).toBeDefined();
+        expect(result.errors).toBeUndefined();
 
-        const apiError: APIError = result.errors![0].originalError! as APIError;
-        expect(apiError).toBeInstanceOf(APIError);
-        expect(apiError.code).toEqual(ErrorCode.PROGRAM_USER_ALREADY_ASSIGNED);
+        const programData: any = result.data!.programAssignUser!;
+        const userErrors: UserError[] = programData.userErrors!;
+        expect(programData.program!).toBeNull();
+        expect(Array.isArray(userErrors)).toBe(true);
+        expect(errorContainsField(userErrors, "userId")).toBe(true);
     });
 
     afterAll(async () => {

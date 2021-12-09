@@ -3,6 +3,15 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+"""Return type for `programAssignUser` mutation."""
+type AssignUserProgramPayload {
+  """The program returned from the mutation."""
+  program: Program
+
+  """The list of errors that occurred from executing the mutation."""
+  userErrors: [UserError!]!
+}
+
 """Specifies the fields for creating a new program."""
 input CreateProgramInput {
   """Specifies an abbreviation for the program, e.g. FSF."""
@@ -12,10 +21,52 @@ input CreateProgramInput {
   name: String!
 }
 
+"""Return type for `programCreate` mutation."""
+type CreateProgramPayload {
+  """The program returned from the mutation."""
+  program: Program
+
+  """The list of errors that occurred from executing the mutation."""
+  userErrors: [UserError!]!
+}
+
+"""Specifies the fields for creating a new user."""
+input CreateUserInput {
+  """The user's email address."""
+  emailAddress: String!
+
+  """The user's first name."""
+  firstName: String
+
+  """The user's last name."""
+  lastName: String
+
+  """The user's role level. Defaults to "Learning Assistant"."""
+  roleLevel: Int = 1
+}
+
+"""Return type for `userCreate` mutation."""
+type CreateUserPayload {
+  """The user returned from the mutation."""
+  user: User
+
+  """The list of errors that occurred from executing the mutation."""
+  userErrors: [UserError!]!
+}
+
 """
 The javascript `Date` as string. Type represents date and time as the ISO Date string.
 """
 scalar DateTime
+
+"""Return type for `userElevateRole` mutation."""
+type ElevateUserRolePayload {
+  """The user returned from the mutation."""
+  user: User
+
+  """The list of errors that occurred from executing the mutation."""
+  userErrors: [UserError!]!
+}
 
 type Mutation {
   """Assigns a user to a program, if they are not already assigned."""
@@ -25,19 +76,22 @@ type Mutation {
 
     """Specifies the user that will be assigned."""
     userId: ID!
-  ): Program!
+  ): AssignUserProgramPayload!
 
   """Creates a new program."""
-  programCreate(input: CreateProgramInput!): Program!
+  programCreate(input: CreateProgramInput!): CreateProgramPayload!
 
-  """Elevates a user's role type to the specified level."""
+  """Creates a new user."""
+  userCreate(input: CreateUserInput!): CreateUserPayload!
+
+  """Elevates a user's role type to the specified role level."""
   userElevateRole(
     """Specifies the level to set the user to."""
     level: Int!
 
     """Specifies the user whose permission will get elevated."""
     userId: ID!
-  ): User!
+  ): ElevateUserRolePayload!
 }
 
 interface Node {
@@ -106,7 +160,7 @@ type User implements Node {
   firstName: String
 
   """The user's Google ID"""
-  googleId: String!
+  googleId: String
 
   """A globally-unique identifier."""
   id: ID!
@@ -122,4 +176,13 @@ type User implements Node {
 
   """The DateTime that the node was last updated, in ISO 8601 format."""
   updatedDate: DateTime!
+}
+
+"""Represents an error in the input of a mutation."""
+type UserError {
+  """The path to the input field that caused the error."""
+  field: [String!]
+
+  """The error message."""
+  message: String!
 }

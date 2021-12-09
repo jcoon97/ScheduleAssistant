@@ -1,8 +1,8 @@
 import { IsUUID } from "class-validator";
 import { ArgsType, Field, ID } from "type-graphql";
-import { Program } from "../entities/Program";
-import { User } from "../entities/User";
-import { IsEntityFound } from "../validators/entity";
+import { Program } from "../../entities/Program";
+import { User } from "../../entities/User";
+import { IsEntityFound } from "../../validators/entity";
 
 @ArgsType()
 export class AssignUserProgramArgs {
