@@ -29,9 +29,9 @@ export class UserResolver {
         const { roleLevel, ...restInput } = input;
         const currentUser: User = (await this.userRepository.findOne({ id: ctx.userId }))!;
         const userErrors: UserError[] = await new UserErrorBuilder()
-            .check([ "input", "emailAddress" ], UserAlreadyExists, "emailAddress", input.emailAddress)
-            .check([ "input", "roleLevel" ], RoleTypeNotFound, roleLevel)
-            .check([ "input", "roleLevel" ], RoleTypeGreaterCurrentRole, currentUser, roleLevel)
+            .check([ "input", "emailAddress" ], UserAlreadyExists, { property: "emailAddress", value: input.emailAddress })
+            .check([ "input", "roleLevel" ], RoleTypeNotFound, { roleLevel })
+            .check([ "input", "roleLevel" ], RoleTypeGreaterCurrentRole, { currentUser, roleLevel })
             .build();
 
         if (userErrors.length === 0) {
@@ -53,10 +53,10 @@ export class UserResolver {
         let elevateUser: User = (await this.userRepository.findOne({ id: args.userId }))!;
         const roleType: RoleType = RoleType.valueByLevel(args.level)!;
         const userErrors: UserError[] = await new UserErrorBuilder()
-            .check([ "userId" ], UserDoesNotExist, "id", args.userId)
-            .check([ "level" ], RoleTypeNotFound, args.level)
-            .check([ "userId" ], RoleTypeGreaterSpecifiedRole, elevateUser, currentUser)
-            .check([ "userId" ], RoleTypeGreaterCurrentRole, currentUser, args.level)
+            .check([ "userId" ], UserDoesNotExist, { property: "id", value: args.userId })
+            .check([ "level" ], RoleTypeNotFound, { roleLevel: args.level })
+            .check([ "userId" ], RoleTypeGreaterSpecifiedRole, { leftSide: elevateUser, rightSide: currentUser })
+            .check([ "userId" ], RoleTypeGreaterCurrentRole, { currentUser, roleLevel: args.level })
             .build();
 
         if (userErrors.length === 0) {

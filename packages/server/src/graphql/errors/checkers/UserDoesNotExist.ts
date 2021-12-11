@@ -1,16 +1,20 @@
 import { getRepository, Repository } from "typeorm";
 import { User } from "../../../entities/User";
-import { ErrorChecker } from "../UserErrorBuilder";
+import { BaseCheckerArgs, BaseErrorChecker } from "../UserErrorBuilder";
 
-export class UserDoesNotExist implements ErrorChecker {
-    async check(args: any[]): Promise<string | null> {
-        if (args.length !== 2) {
-            throw new Error("UserAlreadyExists failed: User property and/or value was not specified");
-        }
+interface UserDoesNotExistArgs extends BaseCheckerArgs {
+    property: keyof User;
+    value: string;
+}
 
+export class UserDoesNotExist extends BaseErrorChecker<UserDoesNotExistArgs> {
+    async check(args: UserDoesNotExistArgs): Promise<string | null> {
         const repository: Repository<User> = getRepository(User);
-        const [ property, value ]: [ keyof User, string ] = args as any;
-        const foundUser: User | undefined = await repository.findOne({ [property]: value });
-        return !foundUser ? "User does not exist in the database." : null;
+        const foundUser: User | undefined = await repository.findOne({ [args.property]: args.value });
+
+        if (!foundUser) {
+            return args.message ?? "User already exists in the database.";
+        }
+        return null;
     }
 }

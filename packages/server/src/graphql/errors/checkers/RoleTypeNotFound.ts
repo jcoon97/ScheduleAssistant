@@ -1,14 +1,17 @@
 import { RoleType } from "../../../entities/User";
-import { ErrorChecker } from "../UserErrorBuilder";
+import { BaseCheckerArgs, BaseErrorChecker } from "../UserErrorBuilder";
 
-export class RoleTypeNotFound implements ErrorChecker {
-    async check(args: any[]): Promise<string | null> {
-        if (args.length !== 1) {
-            throw new Error("RoleTypeNotFound failed: Role level was not specified");
+interface RoleTypeNotFoundArgs extends BaseCheckerArgs {
+    roleLevel: number;
+}
+
+export class RoleTypeNotFound extends BaseErrorChecker<RoleTypeNotFoundArgs> {
+    async check(args: RoleTypeNotFoundArgs): Promise<string | null> {
+        const roleType: RoleType | undefined = RoleType.valueByLevel(args.roleLevel);
+
+        if (!roleType) {
+            return args.message ?? "Role type could not be found by level.";
         }
-
-        const [ roleLevel ]: [ number ] = args as any;
-        const roleType: RoleType | undefined = RoleType.valueByLevel(roleLevel);
-        return !roleType ? "Role type could not be found by level." : null;
+        return null;
     }
 }

@@ -1,18 +1,24 @@
 import { Constructable } from "typedi";
 import { UserError } from "./UserError";
 
-export interface ErrorChecker {
-    check(args: any[]): Promise<string | null>;
+export interface BaseCheckerArgs {
+    message?: string;
 }
 
-interface ErrorCheckerData {
+interface IntlCheckerData {
     field: string[];
-    instance: ErrorChecker;
-    args: any[];
+    instance: BaseErrorChecker<any>;
+    args: any;
+}
+
+type CheckerArgs<T extends { check: (args: T) => Promise<string | null> }> = Parameters<T["check"]>[0];
+
+export abstract class BaseErrorChecker<T extends BaseCheckerArgs> {
+    abstract check(args: T): Promise<string | null>;
 }
 
 export class UserErrorBuilder {
-    private readonly checkers: ErrorCheckerData[];
+    private readonly checkers: IntlCheckerData[];
 
     constructor() {
         this.checkers = [];
@@ -28,8 +34,12 @@ export class UserErrorBuilder {
         return userErrors;
     }
 
-    check<T extends ErrorChecker>(field: string[], checkerClass: Constructable<T>, ...args: any[]): UserErrorBuilder {
-        this.checkers.push({ field, instance: new checkerClass(), args });
+    check<T extends BaseErrorChecker<any>>(
+        field: string[],
+        constructable: Constructable<T>,
+        args: CheckerArgs<T>
+    ): UserErrorBuilder {
+        this.checkers.push({ field, instance: new constructable(), args });
         return this;
     }
 }

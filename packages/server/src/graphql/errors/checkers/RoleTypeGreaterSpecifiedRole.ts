@@ -1,15 +1,17 @@
 import { User } from "../../../entities/User";
-import { ErrorChecker } from "../UserErrorBuilder";
+import { BaseCheckerArgs, BaseErrorChecker } from "../UserErrorBuilder";
 
-export class RoleTypeGreaterSpecifiedRole implements ErrorChecker {
-    async check(args: any[]): Promise<string | null> {
-        if (args.length !== 2) {
-            throw new Error("RoleTypeGreaterSpecifiedRole failed: Two users must be supplied to check against");
+interface RoleTypeGreaterSpecifiedRoleArgs extends BaseCheckerArgs {
+    leftSide: User;
+    rightSide: User;
+}
+
+export class RoleTypeGreaterSpecifiedRole extends BaseErrorChecker<RoleTypeGreaterSpecifiedRoleArgs> {
+    async check(args: RoleTypeGreaterSpecifiedRoleArgs): Promise<string | null> {
+        if (args.leftSide.roleType.level > args.rightSide.roleType.level) {
+            return args.message ?? "Left role type cannot be greater than right role type.";
         }
-
-        const [ leftSide, rightSide ]: [ User, User ] = args as any;
-        return leftSide.roleType.level > rightSide.roleType.level
-            ? "Left role type cannot be greater than right role type."
-            : null;
+        return null;
     }
+
 }
