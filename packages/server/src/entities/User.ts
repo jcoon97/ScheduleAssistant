@@ -1,8 +1,9 @@
 import { Enum, EnumType } from "ts-jenum";
 import { Field, Int, ObjectType } from "type-graphql";
-import { Column, Entity, JoinColumn, ManyToOne } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
 import { BaseEntity, Lazy } from "./BaseEntity";
 import { Program } from "./Program";
+import { Shift } from "./Shift";
 
 @Enum<RoleType>("name")
 @ObjectType()
@@ -80,4 +81,10 @@ export class User extends BaseEntity {
     })
     @JoinColumn({ name: "program_id" })
     program?: Lazy<Program>;
+
+    @OneToMany(() => Shift, shift => shift.user, {
+        cascade: [ "soft-remove" ],
+        lazy: true
+    })
+    shifts?: Lazy<Shift[]>;
 }

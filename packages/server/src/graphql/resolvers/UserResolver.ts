@@ -4,16 +4,15 @@ import { Context } from "../../context";
 import { RoleType, User } from "../../entities/User";
 import { UserRepository } from "../../repositories/UserRepository";
 import { ElevateUserRoleArgs } from "../args-types/ElevateUserRoleArgs";
+import { UserDoesNotExist } from "../errors/checkers/entity-not-exists";
 import { RoleTypeGreaterCurrentRole } from "../errors/checkers/RoleTypeGreaterCurrentRole";
 import { RoleTypeGreaterSpecifiedRole } from "../errors/checkers/RoleTypeGreaterSpecifiedRole";
 import { RoleTypeNotFound } from "../errors/checkers/RoleTypeNotFound";
 import { UserAlreadyExists } from "../errors/checkers/UserAlreadyExists";
-import { UserDoesNotExist } from "../errors/checkers/UserDoesNotExist";
 import { UserError } from "../errors/UserError";
 import { UserErrorBuilder } from "../errors/UserErrorBuilder";
 import { CreateUserInput } from "../input-types/CreateUserInput";
-import { CreateUserPayload } from "../payloads/CreateUserPayload";
-import { ElevateUserRolePayload } from "../payloads/ElevateUserPayload";
+import { CreateUserPayload, ElevateUserRolePayload } from "../payloads/user";
 
 @Resolver(() => User)
 export class UserResolver {

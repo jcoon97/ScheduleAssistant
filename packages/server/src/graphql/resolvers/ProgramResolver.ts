@@ -6,10 +6,9 @@ import { ProgramRepository } from "../../repositories/ProgramRepository";
 import { UserRepository } from "../../repositories/UserRepository";
 import { AssignUserProgramArgs } from "../args-types/AssignUserProgramArgs";
 import { ProgramByIdArgs } from "../args-types/ProgramByIdArgs";
-import { CreateProgramInput } from "../input-types/CreateProgramInput";
-import { AssignUserProgramPayload } from "../payloads/AssignUserProgramPayload";
-import { CreateProgramPayload } from "../payloads/CreateProgramPayload";
 import { UserError } from "../errors/UserError";
+import { CreateProgramInput } from "../input-types/CreateProgramInput";
+import { AssignUserProgramPayload, CreateProgramPayload } from "../payloads/program";
 
 @Resolver(() => Program)
 export class ProgramResolver {

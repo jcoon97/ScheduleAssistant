@@ -15,10 +15,12 @@ import { AuthChecker } from "./AuthChecker";
 import { getContextFromRequest } from "./context";
 import { GoogleController } from "./controllers/GoogleController";
 import { Program } from "./entities/Program";
+import { Shift } from "./entities/Shift";
 import { User } from "./entities/User";
+import { ProgramResolver } from "./graphql/resolvers/ProgramResolver";
+import { ShiftResolver } from "./graphql/resolvers/ShiftResolver";
 import { UserResolver } from "./graphql/resolvers/UserResolver";
 import { getLogger } from "./logger";
-import { ProgramResolver } from "./graphql/resolvers/ProgramResolver";
 
 dotenv.config();
 useContainerTypeORM(Container);
@@ -40,7 +42,7 @@ export class Server {
             authChecker: AuthChecker,
             container: Container,
             emitSchemaFile: emitSchema ?? true,
-            resolvers: [ ProgramResolver, UserResolver ]
+            resolvers: [ ProgramResolver, ShiftResolver, UserResolver ]
         });
     }
 
@@ -64,7 +66,7 @@ export class Server {
                 database: process.env[`DB_${ Server.getEnvironment().toUpperCase() }_DATABASE`] as string,
 
                 dropSchema: dropSchema,
-                entities: [ Program, User ],
+                entities: [ Program, Shift, User ],
                 logging: process.env.NODE_ENV === "development",
                 synchronize: process.env.NODE_ENV !== "production"
             });

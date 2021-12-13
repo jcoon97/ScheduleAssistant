@@ -1,8 +1,10 @@
 import { Constructable } from "typedi";
+import { getLogger } from "../../logger";
 import { UserError } from "./UserError";
 
 export interface BaseCheckerArgs {
     message?: string;
+    nullable?: boolean;
 }
 
 interface IntlCheckerData {
@@ -28,7 +30,13 @@ export class UserErrorBuilder {
         const userErrors: UserError[] = [];
 
         for (const { field, instance, args } of this.checkers) {
-            const result: string | null = await instance.check(args);
+            let result: string | null = null;
+
+            try {
+                result = await instance.check(args);
+            } catch (err) {
+                getLogger().error("User Error Builder failed during a check... ", err);
+            }
             if (result) userErrors.push({ field, message: result });
         }
         return userErrors;

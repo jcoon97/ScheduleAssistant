@@ -30,6 +30,27 @@ type CreateProgramPayload {
   userErrors: [UserError!]!
 }
 
+"""Specifies the fields for creating a new shift."""
+input CreateShiftInput {
+  """Specifies the program that this shift will be attached to."""
+  programId: ID!
+
+  """Specifies the user that will work this shift, if any."""
+  userId: ID
+
+  """Specifies the array of workdays that this shift will be active."""
+  workdays: [Workdays!]!
+}
+
+"""Return type for `shiftCreate` mutation."""
+type CreateShiftPayload {
+  """The shift returned from the mutation."""
+  shift: Shift
+
+  """The list of errors that occurred from executing the mutation."""
+  userErrors: [UserError!]!
+}
+
 """Specifies the fields for creating a new user."""
 input CreateUserInput {
   """The user's email address."""
@@ -80,6 +101,9 @@ type Mutation {
 
   """Creates a new program."""
   programCreate(input: CreateProgramInput!): CreateProgramPayload!
+
+  """Creates a new shift."""
+  shiftCreate(input: CreateShiftInput!): CreateShiftPayload!
 
   """Creates a new user."""
   userCreate(input: CreateUserInput!): CreateUserPayload!
@@ -149,6 +173,26 @@ type RoleType {
   name: String!
 }
 
+type Shift implements Node {
+  """The DateTime that the node was created, in ISO 8601 format."""
+  createdDate: DateTime!
+
+  """A globally-unique identifier."""
+  id: ID!
+
+  """The program that has been assigned to this shift."""
+  program: Program!
+
+  """The DateTime that the node was last updated, in ISO 8601 format."""
+  updatedDate: DateTime!
+
+  """The user that has been assigned to this shift, if any."""
+  user: User
+
+  """Array of workdays assigned to this shift."""
+  workdays: [Workdays!]!
+}
+
 type User implements Node {
   """The DateTime that the node was created, in ISO 8601 format."""
   createdDate: DateTime!
@@ -185,4 +229,15 @@ type UserError {
 
   """The error message."""
   message: String!
+}
+
+"""Possible workdays that can be assigned to a shift."""
+enum Workdays {
+  FRIDAY
+  MONDAY
+  SATURDAY
+  SUNDAY
+  THURSDAY
+  TUESDAY
+  WEDNESDAY
 }
