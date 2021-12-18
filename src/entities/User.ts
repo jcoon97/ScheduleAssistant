@@ -5,6 +5,10 @@ import { BaseEntity, Lazy } from "./BaseEntity";
 import { Program } from "./Program";
 import { Shift } from "./Shift";
 
+export interface RoleTypable {
+    roleType: RoleType;
+}
+
 @Enum<RoleType>("name")
 @ObjectType()
 export class RoleType extends EnumType<RoleType>() {
@@ -34,7 +38,7 @@ export class RoleType extends EnumType<RoleType>() {
 
 @Entity("users")
 @ObjectType({ implements: BaseEntity })
-export class User extends BaseEntity {
+export class User extends BaseEntity implements RoleTypable {
     @Column({ name: "first_name", nullable: true })
     @Field(() => String, {
         description: "The user's first (given) name, if specified.",

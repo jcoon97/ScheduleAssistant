@@ -3,15 +3,13 @@ import { InjectRepository } from "typeorm-typedi-extensions";
 import { Context } from "../../context";
 import { RoleType, User } from "../../entities/User";
 import { UserRepository } from "../../repositories/UserRepository";
-import { ElevateUserRoleArgs } from "../args-types/ElevateUserRoleArgs";
+import { ElevateUserRoleArgs } from "../args-types/user";
+import { UserDoesExist } from "../errors/checkers/entity-exists";
 import { UserDoesNotExist } from "../errors/checkers/entity-not-exists";
-import { RoleTypeGreaterCurrentRole } from "../errors/checkers/RoleTypeGreaterCurrentRole";
-import { RoleTypeGreaterSpecifiedRole } from "../errors/checkers/RoleTypeGreaterSpecifiedRole";
-import { RoleTypeNotFound } from "../errors/checkers/RoleTypeNotFound";
-import { UserAlreadyExists } from "../errors/checkers/UserAlreadyExists";
+import { RoleTypeCompareUser, RoleTypeExceedsCurrentUser, RoleTypeNotFound } from "../errors/checkers/role-type";
 import { UserError } from "../errors/UserError";
 import { UserErrorBuilder } from "../errors/UserErrorBuilder";
-import { CreateUserInput } from "../input-types/CreateUserInput";
+import { CreateUserInput } from "../input-types/user";
 import { CreateUserPayload, ElevateUserRolePayload } from "../payloads/user";
 
 @Resolver(() => User)
@@ -28,18 +26,17 @@ export class UserResolver {
         const { roleLevel, ...restInput } = input;
         const currentUser: User = (await this.userRepository.findOne({ id: ctx.userId }))!;
         const userErrors: UserError[] = await new UserErrorBuilder()
-            .check([ "input", "emailAddress" ], UserAlreadyExists, { property: "emailAddress", value: input.emailAddress })
+            .check([ "input", "emailAddress" ], UserDoesExist, { property: "emailAddress", value: input.emailAddress })
             .check([ "input", "roleLevel" ], RoleTypeNotFound, { roleLevel })
-            .check([ "input", "roleLevel" ], RoleTypeGreaterCurrentRole, { currentUser, roleLevel })
+            .check([ "input", "roleLevel" ], RoleTypeExceedsCurrentUser, { currentUser, roleLevel })
             .build();
 
-        if (userErrors.length === 0) {
-            const roleType: RoleType = RoleType.valueByLevel(roleLevel)!;
-            let user: User = this.userRepository.create({ roleType, ...restInput });
-            user = await this.userRepository.save(user);
-            return { user, userErrors };
-        }
-        return { user: undefined, userErrors };
+        if (userErrors.length > 0) return { user: undefined, userErrors };
+
+        const roleType: RoleType = RoleType.valueByLevel(roleLevel)!;
+        let user: User = this.userRepository.create({ roleType, ...restInput });
+        user = await this.userRepository.save(user);
+        return { user, userErrors };
     }
 
     @Authorized(RoleType.LEAD_LA)
@@ -54,16 +51,15 @@ export class UserResolver {
         const userErrors: UserError[] = await new UserErrorBuilder()
             .check([ "userId" ], UserDoesNotExist, { property: "id", value: args.userId })
             .check([ "level" ], RoleTypeNotFound, { roleLevel: args.level })
-            .check([ "userId" ], RoleTypeGreaterSpecifiedRole, { leftSide: elevateUser, rightSide: currentUser })
-            .check([ "userId" ], RoleTypeGreaterCurrentRole, { currentUser, roleLevel: args.level })
+            .check([ "userId" ], RoleTypeCompareUser, { greaterSide: elevateUser, lesserSide: currentUser })
+            .check([ "userId" ], RoleTypeExceedsCurrentUser, { currentUser, roleLevel: args.level })
             .build();
 
-        if (userErrors.length === 0) {
-            elevateUser.roleType = roleType;
-            elevateUser = await this.userRepository.save(elevateUser);
-            return { user: elevateUser, userErrors };
-        }
-        return { user: undefined, userErrors };
+        if (userErrors.length > 0) return { user: undefined, userErrors };
+
+        elevateUser.roleType = roleType;
+        elevateUser = await this.userRepository.save(elevateUser);
+        return { user: elevateUser, userErrors };
     }
 
     @Authorized(RoleType.LEARNING_ASSISTANT)

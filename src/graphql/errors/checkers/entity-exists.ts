@@ -4,12 +4,12 @@ import { Program } from "../../../entities/Program";
 import { User } from "../../../entities/User";
 import { BaseCheckerArgs, BaseErrorChecker } from "../UserErrorBuilder";
 
-interface EntityDoesNotExistArgs<T extends BaseEntity> extends BaseCheckerArgs {
+interface EntityDoesExistArgs<T extends BaseEntity> extends BaseCheckerArgs {
     property: keyof T;
     value?: any;
 }
 
-class EntityDoesNotExist<T extends BaseEntity> extends BaseErrorChecker<EntityDoesNotExistArgs<T>> {
+class EntityDoesExist<T extends BaseEntity> extends BaseErrorChecker<EntityDoesExistArgs<T>> {
     private readonly entityTarget: EntityTarget<T>;
 
     constructor(entityTarget: EntityTarget<T>) {
@@ -17,26 +17,30 @@ class EntityDoesNotExist<T extends BaseEntity> extends BaseErrorChecker<EntityDo
         this.entityTarget = entityTarget;
     }
 
-    async check(args: EntityDoesNotExistArgs<T>): Promise<string | null> {
-        if ((!args.property || !args.value) && args.nullable) return null;
+    async check(args: EntityDoesExistArgs<T>): Promise<string | null> {
+        if (args.nullable && (!args.property || !args.value)) return null;
+
+        if (!args.nullable && (!args.property || !args.nullable)) {
+            throw new Error("Property and value cannot be undefined or null, unless nullable is set to true");
+        }
 
         const repository: Repository<T> = getRepository(this.entityTarget);
         const foundEntity: T | undefined = await repository.findOne({ [args.property]: args.value });
 
-        if (!foundEntity) {
-            return args.message ?? "Entity does not exist in the database.";
+        if (foundEntity) {
+            return args.message ?? "Entity already exists in the database.";
         }
         return null;
     }
 }
 
-export class UserDoesNotExist extends EntityDoesNotExist<User> {
+export class UserDoesExist extends EntityDoesExist<User> {
     constructor() {
         super(User);
     }
 }
 
-export class ProgramDoesNotExist extends EntityDoesNotExist<Program> {
+export class ProgramDoesExist extends EntityDoesExist<Program> {
     constructor() {
         super(Program);
     }

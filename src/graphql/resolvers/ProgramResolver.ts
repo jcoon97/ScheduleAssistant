@@ -4,10 +4,13 @@ import { Program } from "../../entities/Program";
 import { RoleType, User } from "../../entities/User";
 import { ProgramRepository } from "../../repositories/ProgramRepository";
 import { UserRepository } from "../../repositories/UserRepository";
-import { AssignUserProgramArgs } from "../args-types/AssignUserProgramArgs";
-import { ProgramByIdArgs } from "../args-types/ProgramByIdArgs";
+import { AssignUserProgramArgs, ProgramByIdArgs } from "../args-types/program";
+import { ProgramDoesExist } from "../errors/checkers/entity-exists";
+import { ProgramDoesNotExist, UserDoesNotExist } from "../errors/checkers/entity-not-exists";
+import { IsNotUUID } from "../errors/checkers/uuid";
 import { UserError } from "../errors/UserError";
-import { CreateProgramInput } from "../input-types/CreateProgramInput";
+import { UserErrorBuilder } from "../errors/UserErrorBuilder";
+import { CreateProgramInput } from "../input-types/program";
 import { AssignUserProgramPayload, CreateProgramPayload } from "../payloads/program";
 
 @Resolver(() => Program)
@@ -24,12 +27,19 @@ export class ProgramResolver {
         description: "Assigns a user to a program, if they are not already assigned."
     })
     async assignProgramUser(@Args() args: AssignUserProgramArgs): Promise<AssignUserProgramPayload> {
+        const userErrors: UserError[] = await new UserErrorBuilder()
+            .check([ "programId" ], IsNotUUID, { value: args.programId })
+            .check([ "userId" ], IsNotUUID, { value: args.userId })
+            .check([ "programId" ], ProgramDoesNotExist, { property: "id", value: args.programId })
+            .check([ "userId" ], UserDoesNotExist, { property: "id", value: args.userId })
+            .build();
+
+        if (userErrors.length > 0) return { program: undefined, userErrors };
+
         let program: Program = (await this.programRepository.findOne({ id: args.programId }))!;
         const user: User = (await this.userRepository.findOne({ id: args.userId }))!;
         const programUsers: User[] = await program.users;
-        const userErrors: UserError[] = [];
 
-        // Check that the user is not already present in the program
         if (programUsers.some((user: User) => user.id === args.userId)) {
             userErrors.push({
                 field: [ "userId" ],
@@ -37,16 +47,9 @@ export class ProgramResolver {
             });
         }
 
-        // Add the user to the program
-        if (userErrors.length === 0) {
-            programUsers.push(user);
-            program = await this.programRepository.save(program);
-        }
-
-        return {
-            program: userErrors.length === 0 ? program : undefined,
-            userErrors
-        };
+        programUsers.push(user);
+        program = await this.programRepository.save(program);
+        return { program, userErrors };
     }
 
     @Authorized(RoleType.LA_MANAGER)
@@ -55,21 +58,30 @@ export class ProgramResolver {
         description: "Creates a new program."
     })
     async createProgram(@Arg("input") input: CreateProgramInput): Promise<CreateProgramPayload> {
-        let program = this.programRepository.create({ ...input });
-        program = await this.programRepository.save(program);
+        const userErrors: UserError[] = await new UserErrorBuilder()
+            .check([ "input", "abbreviation" ], ProgramDoesExist, { property: "abbreviation", value: input.abbreviation })
+            .check([ "input", "name" ], ProgramDoesExist, { property: "name", value: input.name })
+            .build();
 
-        return {
-            program,
-            userErrors: []
-        };
+        if (userErrors.length > 0) return { program: undefined, userErrors };
+
+        let program: Program = this.programRepository.create({ ...input });
+        program = await this.programRepository.save(program);
+        return { program, userErrors };
     }
 
     @Authorized()
     @Query(() => Program, {
         name: "program",
-        description: "Returns a Program entity by ID."
+        description: "Returns a Program entity by ID.",
+        nullable: true
     })
-    async getProgramById(@Args() args: ProgramByIdArgs): Promise<Program> {
+    async getProgramById(@Args() args: ProgramByIdArgs): Promise<Program | undefined> {
+        const userErrors: UserError[] = await new UserErrorBuilder()
+            .check([ "id" ], ProgramDoesNotExist, { property: "id", value: args.id })
+            .build();
+
+        if (userErrors.length > 0) return undefined;
         return (await this.programRepository.findOne({ id: args.id }))!;
     }
 }

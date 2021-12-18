@@ -10,7 +10,7 @@ import { ProgramDoesNotExist, UserDoesNotExist } from "../errors/checkers/entity
 import { IsNotUUID } from "../errors/checkers/uuid";
 import { UserError } from "../errors/UserError";
 import { UserErrorBuilder } from "../errors/UserErrorBuilder";
-import { CreateShiftInput } from "../input-types/CreateShiftInput";
+import { CreateShiftInput } from "../input-types/shift";
 import { CreateShiftPayload } from "../payloads/shift";
 
 @Resolver(() => Shift)
